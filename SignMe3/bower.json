@@ -7,6 +7,7 @@
     "jquery-validation": "1.14.0",
     "jquery-validation-unobtrusive": "3.2.6",
     "blockui": "v2.65",
-    "dropzone": "v5.1.1"
+    "dropzone": "v5.1.1",
+    "vue": "v2.5.13"
   }
 }

@@ -3,7 +3,7 @@
 }
 
 <div class="row">
-    
+
 
     @*<iframe src="http://localhost:64098/resources/file.pdf" frameborder="0"></iframe>*@
     <form action="/home/UploadFile"
@@ -11,71 +11,102 @@
           id="my-awesome-dropzone">
         <div class="dz-message">Drop a file here to Sign</div>
     </form>
-    <h2>Sign Below</h2>
-    
-    <canvas style="border:1px solid black" id="the-canvas"></canvas>
-    @*<img id="drag" style="position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />*@
+
+    <div id="app" v-cloak>
+
+
+        <div v-if="fileUploaded">
+            <h2>Sign Below</h2>
+
+            <img v-if="!signed" id="drag" style="position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />
+            <canvas v-on:click="updateImage" style="border:1px solid black" id="the-canvas"></canvas>
+        </div>
+    </div>
+
+
     <style>
         #the-canvas {
             cursor: pointer;
         }
+
         form {
             border-radius: 5px;
             font-family: cursive;
             font-size: 2em;
         }
-        .row{
-            margin-top:25px;    
+
+        .row {
+            margin-top: 25px;
+        }
+
+        [v-cloak] {
+            display: none;
         }
     </style>
     @section scripts{
         <script>
-            //$(document).on('mousemove', function (e) {
-            //    $('#drag').css({
-            //        left: e.pageX,
-            //        top: e.pageY + 10
-            //    });
-            //});
             var uploadedFile;
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    message: 'Hello Vue!',
+                    fileUploaded: false,
+                    signed: false
+                },
+                methods: {
+
+                    updateImage: function (event) {
+                        console.log("click");
+
+                        var x = event.pageX - $(this.$el).find('canvas').offset().left;
+                        var y = event.pageY - $(this.$el).find('canvas').offset().top;
+                        $.blockUI();
+
+                        $.post('/home/UpdateImage', {
+                            x: x,
+                            y: y,
+                            base64: uploadedFile
+                        }).then(function (result) {
+                            loadPDF(atob(result)).then(function () {
+                                $.unblockUI();
+                                app.signed = true;
+                            });
+                        }).fail(function () {
+                            $.unblockUI();
+                        })
+                    }
+                }
+            })
+
+
+
+
             Dropzone.options.myAwesomeDropzone = {
                 init: function () {
                     this.on("success", function (file) {
-                        //console.log(file.xhr.response);
-                        //$('#test').attr('src', "data:application/pdf;base64," + file.xhr.response);
                         uploadedFile = file.xhr.response;
-                        loadPDF(atob(uploadedFile));
+                        loadPDF(atob(uploadedFile)).then(function () {
+                            app.fileUploaded = true;
+
+                            $(document).on('mousemove', function (e) {
+                                if (app.signed == false) {
+                                    $('#drag').css({
+                                        left: e.pageX,
+                                        top: e.pageY + 10
+                                    });
+                                }
+
+                            });
+
+                        });
                     });
                 }
             };
 
-            document.querySelector("#the-canvas").addEventListener('click', function (e) { 
-                console.log("click");
-                var x = e.pageX - this.offsetLeft;
-                var y = e.pageY - this.offsetTop;
-                $.blockUI();
+            //document.querySelector("#the-canvas").addEventListener('click', function (e) {
 
-                //var file = Dropzone.forElement("#my-awesome-dropzone").files[0]
-               
-
-                $.post('/home/UpdateImage' + '?h=' + x + '&v=' + y, {
-                    base64: uploadedFile
-                }).then(function (result) {
-                    loadPDF(atob(result)).then(function () {
-
-                        $.unblockUI();
-                    });
-
-                    })
-            })
-
-
-            window.onload = function () {
-                console.log("Loading")
-                //loadPDF();
-            };
 
             var loadPDF = function (pdfData) {
-//                var loadingTask = PDFJS.getDocument('images/modified.pdf');
                 var loadingTask = PDFJS.getDocument({ data: pdfData });
 
                 return loadingTask.promise.then(function (pdf) {
@@ -106,12 +137,11 @@
                         });
                     });
                 }, function (reason) {
-                    // PDF loading error
                     console.error(reason);
                 });
 
             };
-            
+
         </script>
 
     }

@@ -16,11 +16,11 @@ namespace SignMe3.Controllers
         public IActionResult Index()
         {
 
-            
+
             return View();
         }
         [HttpPost]
-        public IActionResult UploadFile(IFormFile file, double h = 1, double v=1)
+        public IActionResult UploadFile(IFormFile file, double x = 1, double y = 1)
         {
 
             byte[] fileContents;
@@ -32,10 +32,10 @@ namespace SignMe3.Controllers
             return Content(Convert.ToBase64String(fileContents));
 
         }
-  
 
-        [HttpPost,HttpGet]
-        public IActionResult UpdateImage(string base64, double h = 1, double v = 1)
+
+        [HttpPost, HttpGet]
+        public IActionResult UpdateImage(string base64, double x = 1, double y = 1)
         {
             byte[] file = Convert.FromBase64String(base64);
             Stream stream = new MemoryStream(file);
@@ -43,10 +43,10 @@ namespace SignMe3.Controllers
             ComponentInfo.SetLicense("FREE-LIMITED-KEY");
             ComponentInfo.FreeLimitReached += (sender, e) => e.FreeLimitReachedAction = FreeLimitReachedAction.ContinueAsTrial;
 
-            
-            DocumentModel document = DocumentModel.Load(stream,LoadOptions.PdfDefault);
 
-//            DocumentModel document = DocumentModel.Load(@"c:\users\matth\documents\visual studio 2017\Projects\SignMe3\SignMe3\wwwroot\resources\file.pdf");
+            DocumentModel document = DocumentModel.Load(stream, LoadOptions.PdfDefault);
+
+            //            DocumentModel document = DocumentModel.Load(@"c:\users\matth\documents\visual studio 2017\Projects\SignMe3\SignMe3\wwwroot\resources\file.pdf");
 
             var section = new Section(document);
             document.Sections.Add(section);
@@ -61,11 +61,11 @@ namespace SignMe3.Controllers
             var shapeSize = new Size(3, 1, LengthUnit.Centimeter);
 
 
-            var picture = new Picture(document, new MemoryStream(System.IO.File.ReadAllBytes(Path.Combine(pathToResources, "Matt Signature.png"))), PictureFormat.Png, 
+            var picture = new Picture(document, new MemoryStream(System.IO.File.ReadAllBytes(Path.Combine(pathToResources, "Matt Signature.png"))), PictureFormat.Png,
                 new FloatingLayout(
-                new HorizontalPosition(h * .9, LengthUnit.Pixel, HorizontalPositionAnchor.LeftMargin),
-                new VerticalPosition(v * .9, LengthUnit.Pixel, VerticalPositionAnchor.TopMargin), shapeSize)
-            { WrappingStyle = TextWrappingStyle.InFrontOfText }, ShapeType.Rectangle);
+                new HorizontalPosition(x * .9, LengthUnit.Pixel, HorizontalPositionAnchor.LeftMargin),
+                new VerticalPosition(y * .9, LengthUnit.Pixel, VerticalPositionAnchor.TopMargin), shapeSize)
+                { WrappingStyle = TextWrappingStyle.InFrontOfText }, ShapeType.Rectangle);
 
             picture.Outline.Width = 1;
             picture.Outline.Fill.SetSolid(Color.Blue);
@@ -89,8 +89,8 @@ namespace SignMe3.Controllers
 
 
 
-            
-        
+
+
             byte[] fileContents;
             var options = SaveOptions.PdfDefault;
 

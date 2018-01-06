@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
+    <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
+
+
   </PropertyGroup>
 
   <ItemGroup>
