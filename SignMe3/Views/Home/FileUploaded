@@ -11,9 +11,8 @@
           id="my-awesome-dropzone">
         <div class="dz-message">Drop a file here to Sign</div>
     </form>
-    <h2>Sign Below</h2>
-    
-    <canvas style="border:1px solid black" id="the-canvas"></canvas>
+
+    <canvas style="border:1px solid black;visibility:hidden" id="the-canvas"></canvas>
     @*<img id="drag" style="position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />*@
     <style>
         #the-canvas {
@@ -36,36 +35,26 @@
             //        top: e.pageY + 10
             //    });
             //});
-            var uploadedFile;
-            Dropzone.options.myAwesomeDropzone = {
-                init: function () {
-                    this.on("success", function (file) {
-                        //console.log(file.xhr.response);
-                        //$('#test').attr('src', "data:application/pdf;base64," + file.xhr.response);
-                        uploadedFile = file.xhr.response;
-                        loadPDF(atob(uploadedFile));
-                    });
-                }
-            };
+
 
             document.querySelector("#the-canvas").addEventListener('click', function (e) { 
                 console.log("click");
                 var x = e.pageX - this.offsetLeft;
                 var y = e.pageY - this.offsetTop;
                 $.blockUI();
+                
+                //x -= this.offsetLeft;
+                //y -= this.offsetTop;
+                //console.log(x)
+                //document.location = '?h=' + x + '&v=' + y;//
 
-                //var file = Dropzone.forElement("#my-awesome-dropzone").files[0]
-               
-
-                $.post('/home/UpdateImage' + '?h=' + x + '&v=' + y, {
-                    base64: uploadedFile
-                }).then(function (result) {
-                    loadPDF(atob(result)).then(function () {
+                $.get('/home/UpdateImage' + '?h=' + x + '&v=' + y).then(function () {
+                    loadPDF().then(function () { 
 
                         $.unblockUI();
                     });
-
-                    })
+                
+                })
             })
 
 
@@ -74,10 +63,8 @@
                 //loadPDF();
             };
 
-            var loadPDF = function (pdfData) {
-//                var loadingTask = PDFJS.getDocument('images/modified.pdf');
-                var loadingTask = PDFJS.getDocument({ data: pdfData });
-
+            var loadPDF = function () {
+                var loadingTask = PDFJS.getDocument('images/modified.pdf');
                 return loadingTask.promise.then(function (pdf) {
                     console.log('PDF loaded');
 

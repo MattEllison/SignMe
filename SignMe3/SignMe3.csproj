@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <Content Include="wwwroot\images\file.pdf" />
+    <Content Include="wwwroot\images\Matt Signature-small.png" />
+    <Content Include="wwwroot\images\Matt Signature.png" />
     <Content Include="wwwroot\images\pic.jpg" />
     <Content Include="wwwroot\resources\compressed.tracemonkey-pldi-09.pdf" />
     <Content Include="wwwroot\resources\file.pdf" />
@@ -28,6 +30,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\NewFolder\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Views\Home\FileUploaded.cshtml" />
   </ItemGroup>
 
 </Project>
