@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Documents";
+}
+<h2>@ViewData["Title"]</h2>
+<hr />
+
+@section scripts{
+<script>
+
+    var vm = @(Html.Raw(Json.Serialize(Model)));
+    var app = new Vue({
+        el: '#app',
+        data: {
+            vm: vm
+        },
+        methods: {
+            
+        }
+    });
+
+</script>
+
+}
+
+<table class="table" id="app">
+    <thead>
+        <tr>
+            <th>
+                ID
+            </th>
+            <th>
+                DocumentName
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr v-for="doc in vm">
+            <td>{{doc.id}}</td>
+            <td>{{doc.name}}</td>
+        </tr>
+        @*@foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DocumentName)
+                </td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }*@
+    </tbody>
+</table>

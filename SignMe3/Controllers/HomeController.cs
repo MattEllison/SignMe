@@ -12,8 +12,10 @@ using DataAccess;
 
 namespace SignMe3.Controllers
 {
+    
     public class HomeController : Controller
     {
+        private static DocumentEntities DataContext = new DocumentEntities();
         public IActionResult Index()
         { 
             return View();
@@ -21,8 +23,7 @@ namespace SignMe3.Controllers
 
         public IActionResult SignedFile(int id)
         {
-            var db = new DocumentEntities();
-            var doc = db.Documents.Find(id);
+            var doc = DataContext.Documents.Find(id);
             var vm = new ViewModels.SignFileViewModel
             {
                 DocumentID = doc.Id,
@@ -164,18 +165,18 @@ namespace SignMe3.Controllers
 
         //    //return Json(document);
         //}
-        public IActionResult About()
+        
+
+        public IActionResult Documents()
         {
-            ViewData["Message"] = "Your application description page.";
+            var docs = from x in DataContext.Documents
+                       select new
+                       {
+                           Name = x.DocumentName,
+                           ID = x.Id
+                       };
 
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
+            return View(docs);
         }
 
         public IActionResult Error()
