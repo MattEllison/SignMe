@@ -21,20 +21,23 @@ namespace SignMe3.Controllers
 
         public IActionResult SignedFile(int id)
         {
-
             var db = new DocumentEntities();
-            var history = db.ActivityHistories.Where(x => x.UserID == 1);
-            return View(history);
+            var doc = db.Documents.Find(id);
+            var vm = new ViewModels.SignFileViewModel
+            {
+                DocumentID = doc.Id,
+                Filename = doc.DocumentName,
+                Base64 = doc.Base64,
+                ActivityHistory = doc.ActivityHistories.Select(x => new ViewModels.ActivityHistoryViewModel { Status = x.DocumentStatu.Name, InsertDate = x.InsertDate, UserID = x.UserID })
+            };
+            
+            //var history = db.ActivityHistories.Where(x => x.UserID == 1);
+            return View(vm);
         }
 
         [HttpPost]
         public IActionResult UploadFile(IFormFile file, double x = 1, double y = 1)
         {
-            var userid = 1;//TODO update userid
-            //var user = User.Identity.Name;
-            DocumentActivity.RecordActivity(DocumentActivityOptions.Created, userid);
-
-
             byte[] fileContents;
             using (var memoryStream = new MemoryStream())
             {
@@ -50,10 +53,12 @@ namespace SignMe3.Controllers
                 Base64 = Convert.ToBase64String(fileContents)
             };
             db.Documents.Add(newDoc);
+            var test=  db.SaveChanges();
 
-            db.SaveChanges();
 
+            DocumentActivity.RecordActivity(DocumentActivityOptions.Created, newDoc.Id, userid:1);
             return Json(newDoc.Id);
+
             //return Content(Convert.ToBase64String(fileContents));
 
         }
@@ -62,9 +67,11 @@ namespace SignMe3.Controllers
         public IActionResult UpdateImage(int documentID, double x = 1, double y = 1)
         {
             var userid = 1;
-            DocumentActivity.RecordActivity(DocumentActivityOptions.Signed, userid);
+            DocumentActivity.RecordActivity(DocumentActivityOptions.Signed, documentID, userid);
 
-            var signedFile = SignMe.SignFile(base64, x, y);
+            var db = new DocumentEntities();
+
+            var signedFile = SignMe.SignFile(db.Documents.Find(documentID).Base64, x, y);
             return Content(signedFile);
         }
 

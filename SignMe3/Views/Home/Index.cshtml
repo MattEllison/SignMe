@@ -104,8 +104,9 @@
             Dropzone.options.myAwesomeDropzone = {
                 init: function () {
                     $('.dz-message').show();
-                    this.on("success", function (file) {
-                        window.location = '/Home/SignedFile/' + file;
+                    this.on("success", function (file, results) {
+                        
+                        window.location = '/Home/SignedFile/' + results;
                         //uploadedFile = file.xhr.response;
                         //app.uploadedFile = "data:application/octet-stream;base64," + uploadedFile;
                         //loadPDF(atob(uploadedFile)).then(function () {

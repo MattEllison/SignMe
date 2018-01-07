@@ -36,7 +36,7 @@
     <Folder Include="wwwroot\NewFolder\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Views\Home\FileUploaded.cshtml" />
+    <None Include="Views\Home\SignedFile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />

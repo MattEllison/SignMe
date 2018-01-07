@@ -21,7 +21,8 @@ namespace DataAccess
             var newActivity = new ActivityHistory()
             {
                 UserID = userid,
-                DocumentID = documentID
+                DocumentID = documentID,
+                InsertDate = DateTime.Now
 
             };
             

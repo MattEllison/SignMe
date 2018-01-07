@@ -39,8 +39,8 @@ namespace SignMe3
 
             var picture = new Picture(document, new MemoryStream(System.IO.File.ReadAllBytes(Path.Combine(pathToResources, "Matt Signature.png"))), PictureFormat.Png,
                 new FloatingLayout(
-                new HorizontalPosition(x * .9, LengthUnit.Pixel, HorizontalPositionAnchor.LeftMargin),
-                new VerticalPosition(y * .9, LengthUnit.Pixel, VerticalPositionAnchor.TopMargin), shapeSize)
+                new HorizontalPosition(x, LengthUnit.Pixel, HorizontalPositionAnchor.LeftMargin),
+                new VerticalPosition(y, LengthUnit.Pixel, VerticalPositionAnchor.TopMargin), shapeSize)
                 { WrappingStyle = TextWrappingStyle.InFrontOfText }, ShapeType.Rectangle);
 
             picture.Outline.Width = 1;

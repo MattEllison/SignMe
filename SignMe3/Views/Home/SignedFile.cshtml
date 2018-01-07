@@ -1,0 +1,159 @@
+﻿@model SignMe3.ViewModels.SignFileViewModel
+
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div id="app" v-cloak>
+    <div class="row">
+        <div class="col-xs-6 col-md-9">
+
+            <div>
+                <div>
+                    <h2>Sign Below</h2>
+                    <div>
+
+                        <a download="test.pdf" v-bind:href="uploadedFile">Download File</a>
+
+                    </div>
+
+                    <img v-if="!signed" id="drag" style="display:none;position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />
+                    <canvas v-on:click="updateImage" style="width:25em;border:1px solid black" id="the-canvas"></canvas>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-xs-6 col-md-3">
+            <h2>Activity History</h2>
+
+            <ul>
+                <li v-for="item in history">
+                    {{ item.status }} by Matt on {{item.insertDate}}
+                </li>
+            </ul>
+
+
+        </div>
+
+
+    </div>
+</div>
+<style>
+    #the-canvas {
+        cursor: pointer;
+    }
+
+    .row {
+        margin-top: 25px;
+    }
+
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+
+@section scripts{
+    <script>
+
+            var vm = @(Html.Raw(Json.Serialize(Model)));
+
+        $(function () {
+            loadPDF(atob(vm.base64)).then(function () {
+                var canvas  = $('#the-canvas')
+                canvas.on('mousemove', function (e) {
+                    if (app.signed == false) {
+                        $('#drag').show();
+                        console.log("left", canvas.offset().left)
+                        $('#drag').css({
+                            left: e.pageX - canvas.offset().left,
+                            top: e.pageY - canvas.offset().top * .3
+                        });
+                    }
+
+                });
+
+            })
+        });
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    signed: false,
+                    uploadedFile: vm.base64,
+                    history: vm.activityHistory
+                },
+                methods: {
+
+                    updateImage: function (event) {
+                        console.log("click");
+
+                        var x = event.pageX + $(this.$el).find('canvas').offset().left;
+                        var y = event.pageY + $(this.$el).find('canvas').offset().top;
+                        $.blockUI();
+
+                        $.post('/home/UpdateImage', {
+                            x: x * 1.5,
+                            y: y * 1.1,
+                            documentID: vm.documentID,
+                            base64: vm.base64
+                        }).then(function (result) {
+                            loadPDF(atob(result)).then(function () {
+                                $.unblockUI();
+                                app.signed = true;
+                                
+                            });
+                        }).fail(function () {
+                            $.unblockUI();
+                        })
+                    }
+                }
+            })
+
+
+
+            var loadPDF = function (pdfData) {
+                var loadingTask = PDFJS.getDocument({ data: pdfData });
+
+                return loadingTask.promise.then(function (pdf) {
+                    console.log('PDF loaded');
+
+                    // Fetch the first page
+                    var pageNumber = 1;
+                    pdf.getPage(pageNumber).then(function (page) {
+                        console.log('Page loaded');
+
+                        var scale = 1.5;
+                        var viewport = page.getViewport(scale);
+
+                        // Prepare canvas using PDF page dimensions
+                        var canvas = document.getElementById('the-canvas');
+                        var context = canvas.getContext('2d');
+
+                        var bb = document.querySelector('.col-xs-6')
+                            .getBoundingClientRect(),
+                            width = bb.right - bb.left;
+
+
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        // Render PDF page into canvas context
+                        var renderContext = {
+                            canvasContext: context,
+                            viewport: viewport
+                        };
+                        var renderTask = page.render(renderContext);
+                        renderTask.then(function () {
+                            console.log('Page rendered');
+                        });
+                    });
+                }, function (reason) {
+                    console.error(reason);
+                });
+
+            };
+
+    </script>
+
+}
