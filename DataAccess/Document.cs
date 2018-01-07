@@ -22,6 +22,7 @@ namespace DataAccess
     
         public int Id { get; set; }
         public string DocumentName { get; set; }
+        public string Base64 { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ActivityHistory> ActivityHistories { get; set; }

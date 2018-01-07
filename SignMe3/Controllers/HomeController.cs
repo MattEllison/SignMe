@@ -15,9 +15,18 @@ namespace SignMe3.Controllers
     public class HomeController : Controller
     {
         public IActionResult Index()
-        {
+        { 
             return View();
         }
+
+        public IActionResult SignedFile(int id)
+        {
+
+            var db = new DocumentEntities();
+            var history = db.ActivityHistories.Where(x => x.UserID == 1);
+            return View(history);
+        }
+
         [HttpPost]
         public IActionResult UploadFile(IFormFile file, double x = 1, double y = 1)
         {
@@ -32,12 +41,25 @@ namespace SignMe3.Controllers
                 file.CopyTo(memoryStream);
                 fileContents = memoryStream.ToArray();
             }
-            return Content(Convert.ToBase64String(fileContents));
+
+
+            var db = new DocumentEntities();
+            var newDoc = new Document()
+            {
+                DocumentName = file.FileName,
+                Base64 = Convert.ToBase64String(fileContents)
+            };
+            db.Documents.Add(newDoc);
+
+            db.SaveChanges();
+
+            return Json(newDoc.Id);
+            //return Content(Convert.ToBase64String(fileContents));
 
         }
 
         [HttpPost, HttpGet]
-        public IActionResult UpdateImage(string base64, double x = 1, double y = 1)
+        public IActionResult UpdateImage(int documentID, double x = 1, double y = 1)
         {
             var userid = 1;
             DocumentActivity.RecordActivity(DocumentActivityOptions.Signed, userid);

@@ -15,13 +15,16 @@ namespace DataAccess
 
     public static class DocumentActivity
     {
-        public static void RecordActivity(DocumentActivityOptions activity, int userid)
+        public static void RecordActivity(DocumentActivityOptions activity, int documentID, int userid)
         {
             var db = new DocumentEntities();
             var newActivity = new ActivityHistory()
             {
-                UserID = userid
+                UserID = userid,
+                DocumentID = documentID
+
             };
+            
             switch (activity)
             {
                 case DocumentActivityOptions.Created:
