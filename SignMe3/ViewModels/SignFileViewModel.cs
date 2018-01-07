@@ -20,7 +20,7 @@ namespace SignMe3.ViewModels
     public class ActivityHistoryViewModel
     {
         public string Status { get; set; }
-        public DateTime InsertDate { get; set; }
+        public string InsertDate { get; set; }
         public int UserID { get; set; }
     }
 }

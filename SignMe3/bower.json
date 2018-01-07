@@ -8,7 +8,8 @@
     "jquery-validation-unobtrusive": "3.2.6",
     "blockui": "v2.65",
     "dropzone": "v5.1.1",
-    "vue": "v2.5.13"
+    "vue": "v2.5.13",
+    "moment": "1"
   },
   "ignore": [
     "**/.*",

@@ -27,8 +27,14 @@ namespace SignMe3.Controllers
             {
                 DocumentID = doc.Id,
                 Filename = doc.DocumentName,
-                Base64 = doc.Base64,
-                ActivityHistory = doc.ActivityHistories.Select(x => new ViewModels.ActivityHistoryViewModel { Status = x.DocumentStatu.Name, InsertDate = x.InsertDate, UserID = x.UserID })
+                Base64 = doc.SignedBased64 ?? doc.Base64,
+                ActivityHistory = doc.ActivityHistories.Select(x => new
+                ViewModels.ActivityHistoryViewModel
+                {
+                    Status = x.DocumentStatu.Name,
+                    InsertDate = x.InsertDate.ToString("g"),
+                    UserID = x.UserID
+                })
             };
             
             //var history = db.ActivityHistories.Where(x => x.UserID == 1);
@@ -53,7 +59,7 @@ namespace SignMe3.Controllers
                 Base64 = Convert.ToBase64String(fileContents)
             };
             db.Documents.Add(newDoc);
-            var test=  db.SaveChanges();
+            db.SaveChanges();
 
 
             DocumentActivity.RecordActivity(DocumentActivityOptions.Created, newDoc.Id, userid:1);
@@ -72,6 +78,10 @@ namespace SignMe3.Controllers
             var db = new DocumentEntities();
 
             var signedFile = SignMe.SignFile(db.Documents.Find(documentID).Base64, x, y);
+
+            db.Documents.Find(documentID).SignedBased64 = signedFile;
+            db.SaveChanges();
+
             return Content(signedFile);
         }
 

@@ -3,44 +3,18 @@
 }
 
 <div class="row">
-    <div class="col-xs-9">
+    <div class="col-xs-12">
         <form action="/home/UploadFile"
               class="dropzone"
               id="my-awesome-dropzone">
             <div class="dz-message" style="display:none">Drop a file here to Sign</div>
         </form>
 
-        <div id="app" v-cloak>
-            <div v-if="fileUploaded">
-                <h2>Sign Below</h2>
-                <div>
-
-                    <a download="test.pdf" v-bind:href="uploadedFile">Download File</a>
-
-                </div>
-
-                <img v-if="!signed" id="drag" style="position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />
-                <canvas v-on:click="updateImage" style="border:1px solid black" id="the-canvas"></canvas>
-            </div>
-        </div>
-
     </div>
-    <div class="col-xs-3">
-        <h2>Activity History</h2>
-        <div id="historyapp" v-cloak>
-            <ol>
-                <li v-for="item in history">
-                    {{ item.text }}
-                </li>
-            </ol>
 
-        </div>
-    </div>
 
     <style>
-        #the-canvas {
-            cursor: pointer;
-        }
+     
 
         form {
             border-radius: 5px;
@@ -52,120 +26,19 @@
             margin-top: 25px;
         }
 
-        [v-cloak] {
-            display: none;
-        }
+    
     </style>
     @section scripts{
         <script>
             var uploadedFile;
-            //var historyapp = new Vue({
-            //    el: "#historyapp",
-            //    data: {
-            //        hisotry = [];
-            //    }
-            //})
-            var app = new Vue({
-                el: '#app',
-                data: {
-                    message: 'Hello Vue!',
-                    fileUploaded: false,
-                    signed: false,
-                    uploadedFile: ''
-                },
-                methods: {
-
-                    updateImage: function (event) {
-                        console.log("click");
-
-                        var x = event.pageX - $(this.$el).find('canvas').offset().left;
-                        var y = event.pageY - $(this.$el).find('canvas').offset().top;
-                        $.blockUI();
-
-                        $.post('/home/UpdateImage', {
-                            x: x,
-                            y: y,
-                            base64: uploadedFile
-                        }).then(function (result) {
-                            loadPDF(atob(result)).then(function () {
-                                $.unblockUI();
-                                app.signed = true;
-                            });
-                        }).fail(function () {
-                            $.unblockUI();
-                        })
-                    }
-                }
-            })
-
-
-
-
             Dropzone.options.myAwesomeDropzone = {
                 init: function () {
                     $('.dz-message').show();
                     this.on("success", function (file, results) {
-                        
                         window.location = '/Home/SignedFile/' + results;
-                        //uploadedFile = file.xhr.response;
-                        //app.uploadedFile = "data:application/octet-stream;base64," + uploadedFile;
-                        //loadPDF(atob(uploadedFile)).then(function () {
-                        //    app.fileUploaded = true;
-
-                        //    $(document).on('mousemove', function (e) {
-                        //        if (app.signed == false) {
-                        //            $('#drag').css({
-                        //                left: e.pageX,
-                        //                top: e.pageY + 10
-                        //            });
-                        //        }
-
-                        //    });
-
-                        //});
                     });
                 }
             };
-
-            //document.querySelector("#the-canvas").addEventListener('click', function (e) {
-
-
-            var loadPDF = function (pdfData) {
-                var loadingTask = PDFJS.getDocument({ data: pdfData });
-
-                return loadingTask.promise.then(function (pdf) {
-                    console.log('PDF loaded');
-
-                    // Fetch the first page
-                    var pageNumber = 1;
-                    pdf.getPage(pageNumber).then(function (page) {
-                        console.log('Page loaded');
-
-                        var scale = 1.5;
-                        var viewport = page.getViewport(scale);
-
-                        // Prepare canvas using PDF page dimensions
-                        var canvas = document.getElementById('the-canvas');
-                        var context = canvas.getContext('2d');
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
-
-                        // Render PDF page into canvas context
-                        var renderContext = {
-                            canvasContext: context,
-                            viewport: viewport
-                        };
-                        var renderTask = page.render(renderContext);
-                        renderTask.then(function () {
-                            console.log('Page rendered');
-                        });
-                    });
-                }, function (reason) {
-                    console.error(reason);
-                });
-
-            };
-
         </script>
 
     }

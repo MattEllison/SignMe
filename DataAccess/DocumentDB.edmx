@@ -22,6 +22,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="DocumentName" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Base64" Type="varchar(max)" Nullable="false" />
+          <Property Name="SignedBased64" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="DocumentStatus">
           <Key>
@@ -92,6 +93,7 @@
           <Property Name="DocumentName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="ActivityHistories" Relationship="Self.PK_DocumentID" FromRole="Document" ToRole="ActivityHistory" />
           <Property Name="Base64" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="SignedBased64" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="DocumentStatu">
           <Key>
@@ -159,6 +161,7 @@
           <EntitySetMapping Name="Documents">
             <EntityTypeMapping TypeName="MyTempDBModel.Document">
               <MappingFragment StoreEntitySet="Document">
+                <ScalarProperty Name="SignedBased64" ColumnName="SignedBased64" />
                 <ScalarProperty Name="Base64" ColumnName="Base64" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="DocumentName" ColumnName="DocumentName" />

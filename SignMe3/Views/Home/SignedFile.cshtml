@@ -6,29 +6,33 @@
 }
 <div id="app" v-cloak>
     <div class="row">
-        <div class="col-xs-6 col-md-9">
+        <div class="col-xs-6">
 
             <div>
                 <div>
                     <h2>Sign Below</h2>
+                    <hr />
                     <div>
+                    <button class="btn btn-primary pull-right">Save to REDocs</button>
+                    <div><b>Filename: </b>{{vm.filename}}</div>
 
+                    <div>
                         <a download="test.pdf" v-bind:href="uploadedFile">Download File</a>
 
                     </div>
-
+                    </div>
                     <img v-if="!signed" id="drag" style="display:none;position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />
                     <canvas v-on:click="updateImage" style="width:25em;border:1px solid black" id="the-canvas"></canvas>
                 </div>
             </div>
 
         </div>
-        <div class="col-xs-6 col-md-3">
+        <div class="col-xs-6">
             <h2>Activity History</h2>
-
+            <hr />
             <ul>
                 <li v-for="item in history">
-                    {{ item.status }} by Matt on {{item.insertDate}}
+                    {{ item.status }} by mellison on {{item.insertDate}}
                 </li>
             </ul>
 
@@ -61,17 +65,17 @@
         $(function () {
             loadPDF(atob(vm.base64)).then(function () {
                 var canvas  = $('#the-canvas')
-                canvas.on('mousemove', function (e) {
-                    if (app.signed == false) {
-                        $('#drag').show();
-                        console.log("left", canvas.offset().left)
-                        $('#drag').css({
-                            left: e.pageX - canvas.offset().left,
-                            top: e.pageY - canvas.offset().top * .3
-                        });
-                    }
+                //canvas.on('mousemove', function (e) {
+                //    if (app.signed == false) {
+                //        $('#drag').show();
+                //        console.log("left", canvas.offset().left)
+                //        $('#drag').css({
+                //            left: e.pageX - canvas.offset().left,
+                //            top: e.pageY - canvas.offset().top * .3
+                //        });
+                //    }
 
-                });
+                //});
 
             })
         });
@@ -81,7 +85,8 @@
                 data: {
                     signed: false,
                     uploadedFile: vm.base64,
-                    history: vm.activityHistory
+                    history: vm.activityHistory,
+                    vm:vm
                 },
                 methods: {
 
@@ -98,11 +103,12 @@
                             documentID: vm.documentID,
                             base64: vm.base64
                         }).then(function (result) {
-                            loadPDF(atob(result)).then(function () {
-                                $.unblockUI();
-                                app.signed = true;
-                                
-                            });
+                            location.reload();
+                            //loadPDF(atob(result)).then(function () {
+                            //    $.unblockUI();
+                            //    app.signed = true;
+                            //
+                            //});
                         }).fail(function () {
                             $.unblockUI();
                         })
