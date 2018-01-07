@@ -9,7 +9,7 @@
     <form action="/home/UploadFile"
           class="dropzone"
           id="my-awesome-dropzone">
-        <div class="dz-message">Drop a file here to Sign</div>
+        <div class="dz-message" style="display:none">Drop a file here to Sign</div>
     </form>
 
     <div id="app" v-cloak>
@@ -17,6 +17,11 @@
 
         <div v-if="fileUploaded">
             <h2>Sign Below</h2>
+            <div>
+                
+            <a download="test.pdf" v-bind:href="uploadedFile">Download File</a>
+
+            </div>
 
             <img v-if="!signed" id="drag" style="position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />
             <canvas v-on:click="updateImage" style="border:1px solid black" id="the-canvas"></canvas>
@@ -51,7 +56,8 @@
                 data: {
                     message: 'Hello Vue!',
                     fileUploaded: false,
-                    signed: false
+                    signed: false,
+                    uploadedFile: ''
                 },
                 methods: {
 
@@ -83,8 +89,10 @@
 
             Dropzone.options.myAwesomeDropzone = {
                 init: function () {
+                    $('.dz-message').show();
                     this.on("success", function (file) {
                         uploadedFile = file.xhr.response;
+                        app.uploadedFile = "data:application/octet-stream;base64," + uploadedFile;
                         loadPDF(atob(uploadedFile)).then(function () {
                             app.fileUploaded = true;
 
