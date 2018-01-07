@@ -9,5 +9,13 @@
     "blockui": "v2.65",
     "dropzone": "v5.1.1",
     "vue": "v2.5.13"
-  }
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "package.json",
+    "src"
+  ]
 }

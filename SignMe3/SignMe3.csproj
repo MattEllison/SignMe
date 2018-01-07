@@ -20,6 +20,7 @@
     <Content Include="wwwroot\resources\pic.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.2.0" />
     <PackageReference Include="GemBox.Document" Version="27.3.30.1144" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
@@ -36,6 +37,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Views\Home\FileUploaded.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

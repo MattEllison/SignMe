@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="MyTempDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ActivityHistory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="InsertDate" Type="datetime" Nullable="false" />
+          <Property Name="StatusID" Type="int" Nullable="false" />
+          <Property Name="DocumentID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Document">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DocumentName" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DocumentStatus">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <Association Name="PK_DocumentID">
+          <End Role="Document" Type="Self.Document" Multiplicity="1" />
+          <End Role="ActivityHistory" Type="Self.ActivityHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Document">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ActivityHistory">
+              <PropertyRef Name="DocumentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="PK_Status">
+          <End Role="DocumentStatus" Type="Self.DocumentStatus" Multiplicity="1" />
+          <End Role="ActivityHistory" Type="Self.ActivityHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DocumentStatus">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ActivityHistory">
+              <PropertyRef Name="StatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="MyTempDBModelStoreContainer">
+          <EntitySet Name="ActivityHistory" EntityType="Self.ActivityHistory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Document" EntityType="Self.Document" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DocumentStatus" EntityType="Self.DocumentStatus" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="PK_DocumentID" Association="Self.PK_DocumentID">
+            <End Role="Document" EntitySet="Document" />
+            <End Role="ActivityHistory" EntitySet="ActivityHistory" />
+          </AssociationSet>
+          <AssociationSet Name="PK_Status" Association="Self.PK_Status">
+            <End Role="DocumentStatus" EntitySet="DocumentStatus" />
+            <End Role="ActivityHistory" EntitySet="ActivityHistory" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="MyTempDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="ActivityHistory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InsertDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="StatusID" Type="Int32" Nullable="false" />
+          <Property Name="DocumentID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Document" Relationship="Self.PK_DocumentID" FromRole="ActivityHistory" ToRole="Document" />
+          <NavigationProperty Name="DocumentStatu" Relationship="Self.PK_Status" FromRole="ActivityHistory" ToRole="DocumentStatus" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Document">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DocumentName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="ActivityHistories" Relationship="Self.PK_DocumentID" FromRole="Document" ToRole="ActivityHistory" />
+        </EntityType>
+        <EntityType Name="DocumentStatu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="ActivityHistories" Relationship="Self.PK_Status" FromRole="DocumentStatus" ToRole="ActivityHistory" />
+          <Property Name="Code" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <Association Name="PK_DocumentID">
+          <End Role="Document" Type="Self.Document" Multiplicity="1" />
+          <End Role="ActivityHistory" Type="Self.ActivityHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Document">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ActivityHistory">
+              <PropertyRef Name="DocumentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="PK_Status">
+          <End Role="DocumentStatus" Type="Self.DocumentStatu" Multiplicity="1" />
+          <End Role="ActivityHistory" Type="Self.ActivityHistory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DocumentStatus">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ActivityHistory">
+              <PropertyRef Name="StatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DocumentEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="ActivityHistories" EntityType="Self.ActivityHistory" />
+          <EntitySet Name="Documents" EntityType="Self.Document" />
+          <EntitySet Name="DocumentStatus" EntityType="Self.DocumentStatu" />
+          <AssociationSet Name="PK_DocumentID" Association="Self.PK_DocumentID">
+            <End Role="Document" EntitySet="Documents" />
+            <End Role="ActivityHistory" EntitySet="ActivityHistories" />
+          </AssociationSet>
+          <AssociationSet Name="PK_Status" Association="Self.PK_Status">
+            <End Role="DocumentStatus" EntitySet="DocumentStatus" />
+            <End Role="ActivityHistory" EntitySet="ActivityHistories" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="MyTempDBModelStoreContainer" CdmEntityContainer="DocumentEntities">
+          <EntitySetMapping Name="ActivityHistories">
+            <EntityTypeMapping TypeName="MyTempDBModel.ActivityHistory">
+              <MappingFragment StoreEntitySet="ActivityHistory">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="InsertDate" ColumnName="InsertDate" />
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="DocumentID" ColumnName="DocumentID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Documents">
+            <EntityTypeMapping TypeName="MyTempDBModel.Document">
+              <MappingFragment StoreEntitySet="Document">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="DocumentName" ColumnName="DocumentName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DocumentStatus">
+            <EntityTypeMapping TypeName="MyTempDBModel.DocumentStatu">
+              <MappingFragment StoreEntitySet="DocumentStatus">
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
