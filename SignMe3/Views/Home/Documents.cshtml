@@ -31,6 +31,12 @@
             <th>
                 DocumentName
             </th>
+            <th>
+                Last Activity
+            </th>
+            <th>
+                Signed
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -38,6 +44,12 @@
         <tr v-for="doc in vm">
             <td>{{doc.id}}</td>
             <td>{{doc.name}}</td>
+            <td>Viewed by mellison</td>
+            <td>Signed by mellison on 01/07/2018</td>
+            <td>
+                
+                <a v-bind:href="'/Home/SignedFile/' + doc.id" class="btn btn-primary">View Document</a>
+            </td>
         </tr>
         @*@foreach (var item in Model)
         {
