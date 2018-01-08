@@ -12,12 +12,12 @@ using DataAccess;
 
 namespace SignMe3.Controllers
 {
-    
+
     public class HomeController : Controller
     {
         private static DocumentEntities DataContext = new DocumentEntities();
         public IActionResult Index()
-        { 
+        {
             return View();
         }
 
@@ -37,20 +37,46 @@ namespace SignMe3.Controllers
                     UserID = x.UserID
                 })
             };
-            
+
             //var history = db.ActivityHistories.Where(x => x.UserID == 1);
             return View(vm);
         }
 
+        private Dictionary<string, LoadOptions> DocTypes = new Dictionary<string, LoadOptions>()
+        {
+            {".docx",LoadOptions.DocxDefault},
+            {".doc",LoadOptions.DocDefault},
+            {".pdf",LoadOptions.PdfDefault}
+        };
+
         [HttpPost]
         public IActionResult UploadFile(IFormFile file, double x = 1, double y = 1)
         {
+            ComponentInfo.SetLicense("FREE-LIMITED-KEY");
+            ComponentInfo.FreeLimitReached += (sender, e) => e.FreeLimitReachedAction = FreeLimitReachedAction.ContinueAsTrial;
+
+            DocumentModel document;// = DocumentModel.Load(fileContents, LoadOptions.TxtDefault);
+
             byte[] fileContents;
             using (var memoryStream = new MemoryStream())
             {
                 file.CopyTo(memoryStream);
+                //fileContents = memoryStream.ToArray();
+                document = DocumentModel.Load(memoryStream, DocTypes[Path.GetExtension(file.FileName)]);
+                var options = SaveOptions.PdfDefault;
+
+                document.Save(memoryStream, options);
                 fileContents = memoryStream.ToArray();
             }
+
+            //byte[] fileContents2;
+
+            //// Save document to DOCX format in byte array.
+            //using (var memoryStream = new MemoryStream())
+            //{
+            //    fileContents2 = memoryStream.ToArray();
+            //}
+            //return Convert.ToBase64String(fileContents);
 
 
             var db = new DocumentEntities();
@@ -63,7 +89,7 @@ namespace SignMe3.Controllers
             db.SaveChanges();
 
 
-            DocumentActivity.RecordActivity(DocumentActivityOptions.Created, newDoc.Id, userid:1);
+            DocumentActivity.RecordActivity(DocumentActivityOptions.Created, newDoc.Id, userid: 1);
             return Json(newDoc.Id);
 
             //return Content(Convert.ToBase64String(fileContents));
@@ -165,7 +191,7 @@ namespace SignMe3.Controllers
 
         //    //return Json(document);
         //}
-        
+
 
         public IActionResult Documents()
         {

@@ -6,7 +6,7 @@
 }
 <div id="app" v-cloak>
     <div class="row">
-        <div class="col-xs-6">
+        <div class="col-md-9 col-xs-12">
 
             <div>
                 <div>
@@ -22,7 +22,7 @@
                     </div>
                     </div>
                     <img v-if="!signed" id="drag" style="display:none;position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />
-                    <canvas v-on:click="updateImage" style="width:25em;border:1px solid black" id="the-canvas"></canvas>
+                    <canvas v-on:click="updateImage" style="border:1px solid black" id="the-canvas"></canvas>
                 </div>
             </div>
 
@@ -30,11 +30,11 @@
         <div class="col-xs-6">
             <h2>Activity History</h2>
             <hr />
-            <ul>
-                <li v-for="item in history">
+            <div>
+                <div v-for="item in history">
                     {{ item.status }} by mellison on {{item.insertDate}}
-                </li>
-            </ul>
+                </div>
+            </div>
 
 
         </div>
@@ -91,24 +91,24 @@
                 methods: {
 
                     updateImage: function (event) {
-                        console.log("click");
+                        console.log("click", event.pageX);
 
-                        var x = event.pageX + $(this.$el).find('canvas').offset().left;
-                        var y = event.pageY + $(this.$el).find('canvas').offset().top;
+                        var x = event.pageX + $(this.$el).find('canvas').offset().top;
+                        var y = event.pageY + $(this.$el).find('canvas').offset().left;
                         $.blockUI();
 
                         $.post('/home/UpdateImage', {
-                            x: x * 1.5,
-                            y: y * 1.1,
-                            documentID: vm.documentID,
-                            base64: vm.base64
+                            x: x * .4,
+                            y: y * .2,
+                            documentID: vm.documentID//,
+                            //base64: vm.base64
                         }).then(function (result) {
-                            location.reload();
-                            //loadPDF(atob(result)).then(function () {
-                            //    $.unblockUI();
-                            //    app.signed = true;
-                            //
-                            //});
+                            //location.reload();
+                            loadPDF(atob(result)).then(function () {
+                                $.unblockUI();
+                                app.signed = true;
+                            
+                            });
                         }).fail(function () {
                             $.unblockUI();
                         })
@@ -136,9 +136,9 @@
                         var canvas = document.getElementById('the-canvas');
                         var context = canvas.getContext('2d');
 
-                        var bb = document.querySelector('.col-xs-6')
-                            .getBoundingClientRect(),
-                            width = bb.right - bb.left;
+                        //var bb = document.querySelector('.col-xs-9')
+                        //    .getBoundingClientRect(),
+                        //    width = bb.right - bb.left;
 
 
                         canvas.height = viewport.height;

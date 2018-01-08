@@ -12,9 +12,6 @@
         el: '#app',
         data: {
             vm: vm
-        },
-        methods: {
-            
         }
     });
 
@@ -44,27 +41,12 @@
         <tr v-for="doc in vm">
             <td>{{doc.id}}</td>
             <td>{{doc.name}}</td>
-            <td>Viewed by mellison</td>
-            <td>Signed by mellison on 01/07/2018</td>
+            <td>{{doc.lastactivity}}</td>
+            <td>{{doc.lastsignedon}}</td>
             <td>
                 
                 <a v-bind:href="'/Home/SignedFile/' + doc.id" class="btn btn-primary">View Document</a>
             </td>
         </tr>
-        @*@foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DocumentName)
-                </td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-                </td>
-            </tr>
-        }*@
     </tbody>
 </table>
