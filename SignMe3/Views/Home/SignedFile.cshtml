@@ -104,11 +104,11 @@
                         console.log("click", event.pageX);
                         console.log("click", event.pageY);
 
-                        var x = event.pageX //- $('#the-canvas').offset().left;
-                        var y = event.pageY //- $('#the-canvas').offset().top;//- $('.navbar').height();
+                        var x = event.pageX - $('#the-canvas').offset().left;
+                        var y = event.pageY - $('#the-canvas').offset().top;//- $('.navbar').height();
                         $.blockUI();
                         
-                        $.post('/home/UpdateImage', {
+                        $.post('/home/SignImage', {
                             x: x,
                             y: y,
                             documentID: vm.documentID//,

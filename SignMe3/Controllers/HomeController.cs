@@ -16,6 +16,9 @@ namespace SignMe3.Controllers
     public class HomeController : Controller
     {
         private static DocumentEntities DataContext = new DocumentEntities();
+        //private static Libraries.GemBox PDFTool = new Libraries.GemBox();
+        private static Libraries.TextSharp PDFTool = new Libraries.TextSharp();
+
         public IActionResult Index()
         {
             return View();
@@ -47,7 +50,7 @@ namespace SignMe3.Controllers
         public IActionResult UploadFile(IFormFile file, double x = 1, double y = 1)
         {
 
-            string base64 = Libraries.TextSharp.ConvertFile(file);
+            string base64 = PDFTool.ConvertFile(file);
             //string base64 = Libraries.GemBox.ConvertFile(file);
 
             var db = new DocumentEntities();
@@ -118,14 +121,14 @@ namespace SignMe3.Controllers
         //}
 
         [HttpPost, HttpGet]
-        public IActionResult UpdateImage(int documentID, double x = 1, double y = 1)
+        public IActionResult SignImage(int documentID, float x = 1, float y = 1)
         {
             var userid = 1;
             DocumentActivity.RecordActivity(DocumentActivityOptions.Signed, documentID, userid);
 
             var db = new DocumentEntities();
 
-            var signedFile = Libraries.GemBox.SignFile(db.Documents.Find(documentID).Base64, x, y);
+            var signedFile = PDFTool.SignFile(db.Documents.Find(documentID).Base64, x, y);
 
             db.Documents.Find(documentID).SignedBased64 = signedFile;
             db.SaveChanges();

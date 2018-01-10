@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SignMe3.Libraries
 {
-    public static class GemBox
+    public class GemBox
     {
         private static Dictionary<string, LoadOptions> DocTypes = new Dictionary<string, LoadOptions>()
         {
@@ -19,7 +19,7 @@ namespace SignMe3.Libraries
             {".pdf",    LoadOptions.PdfDefault  }
         };
 
-        public static string ConvertFile(IFormFile file)
+        public string ConvertFile(IFormFile file)
         {
             ComponentInfo.SetLicense("FREE-LIMITED-KEY");
             ComponentInfo.FreeLimitReached += (sender, e) => e.FreeLimitReachedAction = FreeLimitReachedAction.ContinueAsTrial;
@@ -40,7 +40,7 @@ namespace SignMe3.Libraries
 
             return Convert.ToBase64String(fileContents);
         }
-        public static string SignFile(string base64, double x, double y)
+        public string SignFile(string base64, double x, double y)
         {
             
             byte[] file = Convert.FromBase64String(base64);
