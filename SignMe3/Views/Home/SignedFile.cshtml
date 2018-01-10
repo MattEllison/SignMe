@@ -65,17 +65,27 @@
         $(function () {
             loadPDF(atob(vm.base64)).then(function () {
                 var canvas  = $('#the-canvas')
-                //canvas.on('mousemove', function (e) {
-                //    if (app.signed == false) {
-                //        $('#drag').show();
-                //        console.log("left", canvas.offset().left)
-                //        $('#drag').css({
-                //            left: e.pageX - canvas.offset().left,
-                //            top: e.pageY - canvas.offset().top * .3
-                //        });
-                //    }
+                canvas.on('mousemove', function (e) {
+                    var pageX = document.getElementById("x");
+                    var pageY = document.getElementById("y");
+                    pageX.innerText = e.pageX;
+                    pageY.innerText = e.pageY;
 
-                //});
+                    var pageX = document.getElementById("pagex");
+                    var pageY = document.getElementById("pagey");
+                    pageX.innerText = canvas.offset().left;
+                    pageY.innerText = canvas.offset().top;
+
+                    //if (app.signed == false) {
+                    //    $('#drag').show();
+                    //    console.log("left", canvas.offset().left)
+                    //    $('#drag').css({
+                    //        left: e.pageX - canvas.offset().left,
+                    //        top: e.pageY - canvas.offset().top * .3
+                    //    });
+                    //}
+
+                });
 
             })
         });
@@ -92,14 +102,15 @@
 
                     updateImage: function (event) {
                         console.log("click", event.pageX);
+                        console.log("click", event.pageY);
 
-                        var x = event.pageX + $(this.$el).find('canvas').offset().top;
-                        var y = event.pageY + $(this.$el).find('canvas').offset().left;
+                        var x = event.pageX //- $('#the-canvas').offset().left;
+                        var y = event.pageY //- $('#the-canvas').offset().top;//- $('.navbar').height();
                         $.blockUI();
-
+                        
                         $.post('/home/UpdateImage', {
-                            x: x * .4,
-                            y: y * .2,
+                            x: x,
+                            y: y,
                             documentID: vm.documentID//,
                             //base64: vm.base64
                         }).then(function (result) {

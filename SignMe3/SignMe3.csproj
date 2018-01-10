@@ -8,6 +8,8 @@
 
   </PropertyGroup>
 
+
+
   <ItemGroup>
     <Content Include="wwwroot\images\file.pdf" />
     <Content Include="wwwroot\images\Matt Signature-small.png" />
@@ -22,6 +24,7 @@
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.2.0" />
     <PackageReference Include="GemBox.Document" Version="27.3.30.1144" />
+    <PackageReference Include="iTextSharp" Version="5.5.12" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
