@@ -1,0 +1,187 @@
+﻿@model SignMe3.ViewModels.SignFileViewModel
+
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div id="app" v-cloak>
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+
+            <div>
+                <div>
+                    <h2>Sign Below</h2>
+                    <hr />
+                    <div>
+                        <button class="btn btn-primary">Save to REDocs</button>
+                        <div><b>Filename: </b>{{vm.filename}}</div>
+
+                        <div>
+                            <a download="test.pdf" v-bind:href="uploadedFile">Download File</a>
+
+                        </div>
+                    </div>
+                    <img v-if="!signed" id="drag" style="display:none;position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />
+                    <canvas v-on:click="updateImage" style="border:1px solid black" id="the-canvas"></canvas>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-xs-6">
+            <h2>Activity History</h2>
+            <hr />
+            <div>
+                <div v-for="item in history">
+                    {{ item.status }} by mellison on {{item.insertDate}}
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+</div>
+<style>
+    #the-canvas {
+        cursor: pointer;
+    }
+
+    .row {
+        margin-top: 25px;
+    }
+
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+
+@section scripts{
+    <script>
+
+            var vm = @(Html.Raw(Json.Serialize(Model)));
+
+        $(function () {
+            GetActiviyHistory();
+
+            loadPDF(atob(vm.base64)).then(function () {
+                var canvas  = $('#the-canvas')
+                canvas.on('mousemove', function (e) {
+                    var pageX = document.getElementById("x");
+                    var pageY = document.getElementById("y");
+                    pageX.innerText = e.pageX;
+                    pageY.innerText = e.pageY;
+
+                    var pageX = document.getElementById("pagex");
+                    var pageY = document.getElementById("pagey");
+                    pageX.innerText = canvas.offset().left;
+                    pageY.innerText = canvas.offset().top;
+
+                    //if (app.signed == false) {
+                    //    $('#drag').show();
+                    //    console.log("left", canvas.offset().left)
+                    //    $('#drag').css({
+                    //        left: e.pageX - canvas.offset().left,
+                    //        top: e.pageY - canvas.offset().top * .3
+                    //    });
+                    //}
+
+                });
+
+            })
+            
+        });
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    signed: false,
+                    uploadedFile: "data:application/pdf;base64," +  vm.base64,
+                    history: vm.activityHistory,
+                    vm:vm
+                },
+                methods: {
+                    
+                    updateImage: function (event) {
+                        console.log("click", event.pageX);
+                        console.log("click", event.pageY);
+
+                        var x = event.pageX - $('#the-canvas').offset().left;
+                        var y = event.pageY - $('#the-canvas').offset().top;//- $('.navbar').height();
+                        $.blockUI();
+
+                        $.post('/Document/SignImage', {
+                            x: x,
+                            y: y,
+                            id: vm.documentID//,
+                            //base64: vm.base64
+                        }).then(function (result) {
+                            //location.reload();
+                            loadPDF(atob(result)).then(function () {
+                                $.unblockUI();
+                                app.signed = true;
+
+                            }).then(function () {
+                                GetActiviyHistory();
+                            });
+
+                        }).fail(function () {
+                            $.unblockUI();
+                        })
+                    }
+                }
+            })
+
+            var GetActiviyHistory = function () {
+                return $.post("/Document/ActivityHistory", { id: vm.documentID }).then(function (results) {
+                    app.history = results;
+
+                })
+
+            }
+            var loadPDF = function (pdfData) {
+                var loadingTask = PDFJS.getDocument({ data: pdfData });
+
+                return loadingTask.promise.then(function (pdf) {
+                    console.log('PDF loaded');
+
+                    // Fetch the first page
+                    var pageNumber = 1;
+                    pdf.getPage(pageNumber).then(function (page) {
+                        console.log('Page loaded');
+
+                        var scale = 1;
+                        var viewport = page.getViewport(scale);
+
+                        // Prepare canvas using PDF page dimensions
+                        var canvas = document.getElementById('the-canvas');
+                        var context = canvas.getContext('2d');
+
+                        //var bb = document.querySelector('.col-xs-9')
+                        //    .getBoundingClientRect(),
+                        //    width = bb.right - bb.left;
+
+
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        // Render PDF page into canvas context
+                        var renderContext = {
+                            canvasContext: context,
+                            viewport: viewport
+                        };
+                        var renderTask = page.render(renderContext);
+                        renderTask.then(function () {
+                            console.log('Page rendered');
+                        });
+                    });
+                }, function (reason) {
+                    console.error(reason);
+                });
+
+            };
+
+    </script>
+
+}

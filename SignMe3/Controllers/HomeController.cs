@@ -24,58 +24,17 @@ namespace SignMe3.Controllers
             return View();
         }
 
-        public IActionResult SignedFile(int id)
-        {
-            var doc = DataContext.Documents.Find(id);
-            var vm = new ViewModels.SignFileViewModel
-            {
-                DocumentID = doc.Id,
-                Filename = doc.DocumentName,
-                Base64 = doc.SignedBased64 ?? doc.Base64,
-                ActivityHistory = doc.ActivityHistories.Select(x => new
-                ViewModels.ActivityHistoryViewModel
-                {
-                    Status = x.DocumentStatu.Name,
-                    InsertDate = x.InsertDate.ToString("g"),
-                    UserID = x.UserID
-                })
-            };
-
-            //var history = db.ActivityHistories.Where(x => x.UserID == 1);
-            return View(vm);
-        }
 
 
-        [HttpPost]
-        public IActionResult UploadFile(IFormFile file, double x = 1, double y = 1)
-        {
-
-            string base64 = PDFTool.ConvertFile(file);
-            //string base64 = Libraries.GemBox.ConvertFile(file);
-
-            var db = new DocumentEntities();
-            var newDoc = new Document()
-            {
-                DocumentName = file.FileName,
-                Base64 = base64
-            };
-            db.Documents.Add(newDoc);
-            db.SaveChanges();
 
 
-            DocumentActivity.RecordActivity(DocumentActivityOptions.Created, newDoc.Id, userid: 1);
-            return Json(newDoc.Id);
-
-            //return Content(Convert.ToBase64String(fileContents));
-
-        }
 
 
         //[HttpPost]
         //public IActionResult UploadFile(IFormFile file, double x = 1, double y = 1)
         //{
 
-            
+
         //    ComponentInfo.SetLicense("FREE-LIMITED-KEY");
         //    ComponentInfo.FreeLimitReached += (sender, e) => e.FreeLimitReachedAction = FreeLimitReachedAction.ContinueAsTrial;
 
@@ -120,20 +79,27 @@ namespace SignMe3.Controllers
 
         //}
 
-        [HttpPost, HttpGet]
-        public IActionResult SignImage(int documentID, float x = 1, float y = 1)
+        [HttpPost]
+        public IActionResult UploadFile(IFormFile file, double x = 1, double y = 1)
         {
-            var userid = 1;
-            DocumentActivity.RecordActivity(DocumentActivityOptions.Signed, documentID, userid);
+
+            string base64 = PDFTool.ConvertFile(file);
+            //string base64 = Libraries.GemBox.ConvertFile(file);
 
             var db = new DocumentEntities();
-
-            var signedFile = PDFTool.SignFile(db.Documents.Find(documentID).Base64, x, y);
-
-            db.Documents.Find(documentID).SignedBased64 = signedFile;
+            var newDoc = new Document()
+            {
+                DocumentName = file.FileName,
+                Base64 = base64
+            };
+            db.Documents.Add(newDoc);
             db.SaveChanges();
 
-            return Content(signedFile);
+
+            DocumentActivity.RecordActivity(DocumentActivityOptions.Created, newDoc.Id, userid: 1);
+            return Json(newDoc.Id);
+
+
         }
 
 

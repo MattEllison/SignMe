@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "My Signature";
+}
+<h2>@ViewData["Title"].</h2>
+@*<canvas style="border:1px solid black" id="test"></canvas>*@
+<div id="signature"></div>
+
+<div>
+    <button class="btn btn-info" onclick="$sigdiv.jSignature('reset')">Clear</button>
+    <button class="btn btn-primary" onclick="Submit()">Submit</button>
+</div>
+@section scripts{
+    <script src="~/lib/jSignature/jSignature.min.js"></script>
+    <script>
+        var $sigdiv;
+        var Submit = function () {
+            datapair = $sigdiv.jSignature("getData", "base30")
+            var data = {
+                dataImage: datapair
+            };
+
+            //$.post('/api/UpdateMySignature', data, function () {
+
+
+            //});
+
+        }
+        $(function () {
+            $sigdiv = $("#signature")
+            $sigdiv.jSignature() // inits the jSignature widget.
+        })
+
+    </script>
+
+}

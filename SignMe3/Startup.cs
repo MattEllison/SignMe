@@ -48,12 +48,17 @@ namespace SignMe3
             }
 
             app.UseStaticFiles();
-
+            var t = new { contrller = "", action = "" };
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+                    name: "Documents",
+                    template: "{controller=Document}/{id:int}",
+                    defaults: new { action = "Details" });
             });
         }
     }
