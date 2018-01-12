@@ -13,7 +13,7 @@ namespace SignMe3.Libraries
     public class TextSharp
     {
         public static string pathToResources = @"c:\users\matth\documents\visual studio 2017\Projects\SignMe3\SignMe3\wwwroot\images\";
-        public  string ConvertFile(IFormFile file)
+        public string ConvertFile(IFormFile file)
         {
             //string pdfpath = Server.MapPath("PDFs");
             //byte[] file = Convert.FromBase64String(base64);
@@ -27,24 +27,25 @@ namespace SignMe3.Libraries
 
             //PdfContentByte cb = writer.DirectContent;
             doc.Add(new Paragraph("Image"));
-            
+
             Image gif = Image.GetInstance(pathToResources + @"\matt signature.png");
 
             doc.Add(gif);
 
             return Convert.ToBase64String(stream.ToArray());
         }
-        public  string SignFile(string base64, float x, float  y)
+        public string SignFile(byte[] fileToSign, byte[] userSignature, float x, float y)
         {
-            byte[] file = Convert.FromBase64String(base64);
-            var stream = new MemoryStream(file);
+            //byte[] file = Convert.FromBase64String(base64);
+            var stream = new MemoryStream(fileToSign);
 
             PdfReader pdfReader = new PdfReader(stream);
-            var sig = new MemoryStream(System.IO.File.ReadAllBytes(Path.Combine(pathToResources, "Matt Signature.png")));
+            //var sig = new MemoryStream(System.IO.File.ReadAllBytes(Path.Combine(pathToResources, "Matt Signature.png")));
             var newFile = new MemoryStream();
             PdfStamper pdfStamper = new PdfStamper(pdfReader, newFile);
 
-            Image image = Image.GetInstance(Path.Combine(pathToResources, "Matt Signature.png"));
+            //Image image = Image.GetInstance(Path.Combine(pathToResources, "Matt Signature.png"));
+            Image image = Image.GetInstance(userSignature.ToArray());
             image.ScaleAbsolute(150f, 75f);
             PdfContentByte content = pdfStamper.GetOverContent(1);
             image.SetAbsolutePosition(pdfReader.GetPageSize(1).Width * .5f, pdfReader.GetPageSize(1).Height * .5f);

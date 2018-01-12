@@ -5,34 +5,39 @@
     ViewData["Title"] = "Home Page";
 }
 <div id="app" v-cloak>
-    <div class="row">
-        <div class="col-md-6 col-xs-12">
+    <h2>{{vm.filename}}</h2>
+    <hr />
+    <div class="row buttons">
+        <div class="col-xs-6">
 
             <div>
-                <div>
-                    <h2>Sign Below</h2>
-                    <hr />
-                    <div>
-                        <button class="btn btn-primary">Save to REDocs</button>
-                        <div><b>Filename: </b>{{vm.filename}}</div>
+                <a class="btn btn-primary btn-lg"  download="SignedFile.pdf" v-bind:href="uploadedFile">Download File</a>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <button class="btn btn-primary btn-lg">Save to REDocs</button>
 
-                        <div>
-                            <a download="test.pdf" v-bind:href="uploadedFile">Download File</a>
+        </div>
+       
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-xs-12">
 
-                        </div>
-                    </div>
+            <div>
+                <div >
+                
                     <img v-if="!signed" id="drag" style="display:none;position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />
                     <canvas v-on:click="updateImage" style="border:1px solid black" id="the-canvas"></canvas>
                 </div>
             </div>
 
         </div>
-        <div class="col-xs-6">
+        <div class="col-xs-3 col-sm-9">
             <h2>Activity History</h2>
             <hr />
             <div>
                 <div v-for="item in history">
-                    {{ item.status }} by mellison on {{item.insertDate}}
+                    {{ item.status }} by {{item.userName}} on {{item.insertDate}}
                 </div>
             </div>
 
@@ -53,6 +58,13 @@
 
     [v-cloak] {
         display: none;
+    }
+
+    .buttons .btn{
+        padding:50px;
+        width:100%
+        /*margin:10px;
+        width:25em;*/
     }
 </style>
 
@@ -151,7 +163,7 @@
                     pdf.getPage(pageNumber).then(function (page) {
                         console.log('Page loaded');
 
-                        var scale = 1;
+                        var scale = 1.5;
                         var viewport = page.getViewport(scale);
 
                         // Prepare canvas using PDF page dimensions

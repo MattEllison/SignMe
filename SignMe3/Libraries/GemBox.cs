@@ -40,9 +40,9 @@ namespace SignMe3.Libraries
 
             return Convert.ToBase64String(fileContents);
         }
-        public string SignFile(string base64, double x, double y)
+        public string SignFile(string base64, string userSignature, double x, double y)
         {
-            
+
             byte[] file = Convert.FromBase64String(base64);
             Stream stream = new MemoryStream(file);
 

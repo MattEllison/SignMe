@@ -22,5 +22,6 @@ namespace SignMe3.ViewModels
         public string Status { get; set; }
         public string InsertDate { get; set; }
         public int UserID { get; set; }
+        public string UserName { get; internal set; }
     }
 }

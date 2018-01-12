@@ -14,7 +14,7 @@
         </div>
         <div v-if="vm" class="col-xs-12">
             <h4>Your Current Signaure</h4>
-            <img v-bind:src="signedfile" alt="Your Current Signature" />
+            <img  v-bind:src="signedfile" alt="Your Current Signature" />
 
         </div>
     </div>
@@ -58,13 +58,14 @@
     <script>
         var vm = @Json.Serialize(Model);
         var $sigdiv;
-        var yoursignature = document.querySelector("#YourSig");
         var app;
         $(function () {
+  
+            console.log("loaded")
             app = new Vue({
                 el: '#app',
                 data: {
-                    signedfile: "data:" + vm.signature,
+                    signedfile: "data:" + (vm != null ? vm.signature : ''),
                     vm: vm
                 },
                 methods: {
@@ -80,10 +81,11 @@
                     },
                     Submit :function () {
                         var data = {
-                            signature: $sigdiv.jSignature("getData", "svg").join(",")
+                            signature: $sigdiv.jSignature("getData", "image").join(",")
                         };
                         $.post('/Signature/Update', data, function (result) {
                             app.signedfile = "data:" + result;
+                            vm.signature = result;
                             app.Reset();
                         });
 
@@ -94,9 +96,9 @@
 
                 }
             })
+            
             $sigdiv = $("#signature")
             $sigdiv.jSignature();
-
         })
 
 

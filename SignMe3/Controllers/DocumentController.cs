@@ -15,6 +15,7 @@ namespace SignMe3.Controllers
         //private static Libraries.GemBox PDFTool = new Libraries.GemBox();
         private static Libraries.TextSharp PDFTool = new Libraries.TextSharp();
         private int userid = 1;
+        public string username = "mellison";
         public IActionResult Index()
         {
             var docs = from x in DataContext.Documents
@@ -53,6 +54,7 @@ namespace SignMe3.Controllers
                          {
                              Status = x.DocumentStatu.Name,
                              InsertDate = x.InsertDate.ToString("g"),
+                             UserName = username,
                              UserID = x.UserID
                          };
             return Json(result); 
@@ -65,7 +67,11 @@ namespace SignMe3.Controllers
 
             var db = new DocumentEntities();
 
-            var signedFile = PDFTool.SignFile(db.Documents.Find(id).Base64, x, y);
+            var file = Convert.FromBase64String(db.Documents.Find(id).Base64).ToArray();
+            var userSignature =  DataContext.UserSignatures.FirstOrDefault(sig => sig.UserName == username).SignatureBase64;
+            var userSignatureBytes = Convert.FromBase64String(userSignature.Replace("image/png;base64,", ""));
+
+            var signedFile = PDFTool.SignFile(file, userSignatureBytes, x, y);
 
             db.Documents.Find(id).SignedBased64 = signedFile;
             db.SaveChanges();
