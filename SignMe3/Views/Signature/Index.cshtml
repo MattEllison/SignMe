@@ -1,34 +1,107 @@
 ﻿@{
     ViewData["Title"] = "My Signature";
 }
-<h2>@ViewData["Title"].</h2>
-@*<canvas style="border:1px solid black" id="test"></canvas>*@
-<div id="signature"></div>
+<h2>@ViewData["Title"]</h2>
+<hr />
+<div id="app">
+    <div class="row">
+        <div v-if="!vm">
+            <div class="col-xs-12">
+                No signature on file. Sign below.
 
-<div>
-    <button class="btn btn-info" onclick="$sigdiv.jSignature('reset')">Clear</button>
-    <button class="btn btn-primary" onclick="Submit()">Submit</button>
+            </div>
+
+        </div>
+        <div v-if="vm" class="col-xs-12">
+            <h4>Your Current Signaure</h4>
+            <img v-bind:src="signedfile" alt="Your Current Signature" />
+
+        </div>
+    </div>
+    <hr />
+    <h4>Upload new signature here</h4>
+    <div class="row">
+
+        <div class="col-xs-9">
+            <div style="border:1px solid black;margin:25px;" id="signature"></div>
+
+        </div>
+        <div class="col-xs-3">
+            <div class="buttons">
+                <button class="btn btn-lg btn-info" v-on:click="Reset">Clear</button>
+                <button class="btn btn-lg btn-danger" v-on:click="Delete">Delete</button>
+                <button class="btn btn-lg btn-primary" v-on:click="Submit">Submit</button>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+
+<style>
+    .buttons {
+        display: grid;
+    }
+
+        .buttons button {
+            margin-top: 20px;
+        }
+
+        .buttons .btn-primary {
+            padding: 45px;
+        }
+</style>
+
 @section scripts{
     <script src="~/lib/jSignature/jSignature.min.js"></script>
+
     <script>
+        var vm = @Json.Serialize(Model);
         var $sigdiv;
-        var Submit = function () {
-            datapair = $sigdiv.jSignature("getData", "base30")
-            var data = {
-                dataImage: datapair
-            };
-
-            //$.post('/api/UpdateMySignature', data, function () {
-
-
-            //});
-
-        }
+        var yoursignature = document.querySelector("#YourSig");
+        var app;
         $(function () {
+            app = new Vue({
+                el: '#app',
+                data: {
+                    signedfile: "data:" + vm.signature,
+                    vm: vm
+                },
+                methods: {
+                    Delete: function () {
+                        if (confirm("Are you sure")) {
+                            $.post('/Signature/Delete', {}, function () {
+                                alert('Delete Successful');
+                            }).fail(function () {
+                                alert("Delete Failed");
+                            });
+                        }
+
+                    },
+                    Submit :function () {
+                        var data = {
+                            signature: $sigdiv.jSignature("getData", "svg").join(",")
+                        };
+                        $.post('/Signature/Update', data, function (result) {
+                            app.signedfile = "data:" + result;
+                            app.Reset();
+                        });
+
+                    },
+                    Reset: function () {
+                        $sigdiv.jSignature('reset')
+                    }
+
+                }
+            })
             $sigdiv = $("#signature")
-            $sigdiv.jSignature() // inits the jSignature widget.
+            $sigdiv.jSignature();
+
         })
+
+
+       
+
 
     </script>
 

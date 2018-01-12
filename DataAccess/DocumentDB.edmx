@@ -32,6 +32,14 @@
           <Property Name="Name" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Code" Type="nvarchar" MaxLength="255" />
         </EntityType>
+        <EntityType Name="UserSignature">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="SignatureBase64" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <Association Name="PK_DocumentID">
           <End Role="Document" Type="Self.Document" Multiplicity="1" />
           <End Role="ActivityHistory" Type="Self.ActivityHistory" Multiplicity="*" />
@@ -60,6 +68,7 @@
           <EntitySet Name="ActivityHistory" EntityType="Self.ActivityHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Document" EntityType="Self.Document" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DocumentStatus" EntityType="Self.DocumentStatus" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserSignature" EntityType="Self.UserSignature" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="PK_DocumentID" Association="Self.PK_DocumentID">
             <End Role="Document" EntitySet="Document" />
             <End Role="ActivityHistory" EntitySet="ActivityHistory" />
@@ -140,7 +149,16 @@
             <End Role="DocumentStatus" EntitySet="DocumentStatus" />
             <End Role="ActivityHistory" EntitySet="ActivityHistories" />
           </AssociationSet>
+          <EntitySet Name="UserSignatures" EntityType="MyTempDBModel.UserSignature" />
         </EntityContainer>
+        <EntityType Name="UserSignature">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="SignatureBase64" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -174,6 +192,15 @@
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserSignatures">
+            <EntityTypeMapping TypeName="MyTempDBModel.UserSignature">
+              <MappingFragment StoreEntitySet="UserSignature">
+                <ScalarProperty Name="SignatureBase64" ColumnName="SignatureBase64" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

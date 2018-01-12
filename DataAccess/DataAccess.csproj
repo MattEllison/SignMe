@@ -75,6 +75,9 @@
       <DependentUpon>DocumentDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserSignature.cs">
+      <DependentUpon>DocumentDB.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -28,5 +28,6 @@ namespace DataAccess
         public virtual DbSet<ActivityHistory> ActivityHistories { get; set; }
         public virtual DbSet<Document> Documents { get; set; }
         public virtual DbSet<DocumentStatu> DocumentStatus { get; set; }
+        public virtual DbSet<UserSignature> UserSignatures { get; set; }
     }
 }

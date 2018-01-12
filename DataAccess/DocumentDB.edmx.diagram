@@ -10,6 +10,7 @@
         <EntityTypeShape EntityType="MyTempDBModel.DocumentStatu" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
         <AssociationConnector Association="MyTempDBModel.PK_DocumentID" ManuallyRouted="false" />
         <AssociationConnector Association="MyTempDBModel.PK_Status" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="MyTempDBModel.UserSignature" Width="1.5" PointX="3.375" PointY="4.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

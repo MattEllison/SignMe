@@ -8,6 +8,13 @@
 
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\bin\**" />
+    <Content Remove="Controllers\bin\**" />
+    <EmbeddedResource Remove="Controllers\bin\**" />
+    <None Remove="Controllers\bin\**" />
+  </ItemGroup>
+
 
 
   <ItemGroup>
