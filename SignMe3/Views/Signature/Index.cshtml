@@ -79,9 +79,10 @@
                         }
 
                     },
-                    Submit :function () {
+                    Submit: function () {
+                        console.log($sigdiv.jSignature("getData");
                         var data = {
-                            signature: $sigdiv.jSignature("getData", "image").join(",")
+                            signature: $sigdiv.jSignature("getData", "image")[1]
                         };
                         $.post('/Signature/Update', data, function (result) {
                             app.signedfile = "data:" + result;

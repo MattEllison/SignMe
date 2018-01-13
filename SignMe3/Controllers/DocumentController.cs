@@ -32,7 +32,7 @@ namespace SignMe3.Controllers
             
             DocumentActivity.RecordActivity(DocumentActivityOptions.Viewed, id, userid);
 
-            var doc = DataContext.Documents.Find(id);
+            var doc = DataContext.Documents.First(x=>x.Id == id);
             var vm = new ViewModels.SignFileViewModel
             {
                 DocumentID = doc.Id,
@@ -73,7 +73,9 @@ namespace SignMe3.Controllers
 
             var signedFile = PDFTool.SignFile(file, userSignatureBytes, x, y);
 
-            db.Documents.Find(id).SignedBased64 = signedFile;
+            var doc = db.Documents.First(xx => xx.Id == id);
+            doc.SignedBased64 = signedFile;
+            db.Entry<Document>(doc).State = System.Data.Entity.EntityState.Modified;
             db.SaveChanges();
 
             return Content(signedFile);

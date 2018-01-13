@@ -11,23 +11,23 @@
         <div class="col-xs-6">
 
             <div>
-                <a class="btn btn-primary btn-lg"  download="SignedFile.pdf" v-bind:href="uploadedFile">Download File</a>
+                <a class="btn btn-primary btn-lg" download="SignedFile.pdf" v-bind:href="uploadedFile">Download File</a>
             </div>
         </div>
         <div class="col-xs-6">
             <button class="btn btn-primary btn-lg">Save to REDocs</button>
 
         </div>
-       
+
     </div>
     <div class="row">
         <div class="col-sm-12 col-xs-12">
 
             <div>
-                <div id="doc" v-on:click="updateImage" >
-                
-                    <img v-if="!signed" id="drag" style="display:none;position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />
-                    <canvas v-on:click="updateImage" style="border:1px solid black" id="the-canvas"></canvas>
+                <div id="doc" v-on:click="updateImage">
+
+                    @*<img v-if="!signed" id="drag" style="display:none;position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />*@
+                    @*<canvas v-on:click="updateImage" style="border:1px solid black" id="the-canvas"></canvas>*@
                 </div>
             </div>
 
@@ -48,8 +48,9 @@
     </div>
 </div>
 <style>
-    #the-canvas {
+    canvas {
         cursor: pointer;
+        border: 1px solid black;
     }
 
     .row {
@@ -60,9 +61,9 @@
         display: none;
     }
 
-    .buttons .btn{
-        padding:50px;
-        width:100%
+    .buttons .btn {
+        padding: 50px;
+        width: 100%
         /*margin:10px;
         width:25em;*/
     }
@@ -76,8 +77,8 @@
 
         $(function () {
             GetActiviyHistory();
-            
-            renderPDF(atob(vm.base64), document.getElementById('doc'));
+
+            renderPDF(atob(vm.base64));
             //loadPDF(atob(vm.base64))
                 //.then(function () {
                 //var canvas  = $('#the-canvas')
@@ -104,7 +105,7 @@
                 //});
 
             //})
-            
+
         });
 
             var app = new Vue({
@@ -116,13 +117,13 @@
                     vm:vm
                 },
                 methods: {
-                    
+
                     updateImage: function (event) {
                         console.log("click", event.pageX);
                         console.log("click", event.pageY);
 
-                        var x = event.pageX - $('#the-canvas').offset().left;
-                        var y = event.pageY - $('#the-canvas').offset().top;//- $('.navbar').height();
+                        var x = event.pageX - $('canvas').offset().left;
+                        var y = event.pageY - $('canvas').offset().top;//- $('.navbar').height();
                         $.blockUI();
 
                         $.post('/Document/SignImage', {
@@ -132,10 +133,10 @@
                             //base64: vm.base64
                         }).then(function (result) {
                             //location.reload();
-                            loadPDF(atob(result)).then(function () {
+                            renderPDF(atob(result)).then(function () {
                                 $.unblockUI();
-                                app.signed = true;
-
+                                //app.signed = true;
+                                app.uploadedFile = "data:application/pdf;base64," + result;
                             }).then(function () {
                                 GetActiviyHistory();
                             });
@@ -154,61 +155,18 @@
                 })
 
             }
-            var loadPDF = function (pdfData) {
-                var loadingTask = PDFJS.getDocument({ data: pdfData });
 
-                return loadingTask.promise.then(function (pdf) {
-                    console.log('PDF loaded');
-
-                    var renderPage = function (page) {
-                        console.log('Page loaded');
-
-                        var scale = 1.5;
-                        var viewport = page.getViewport(scale);
-
-                        // Prepare canvas using PDF page dimensions
-                        var maincanvas = document.getElementById('the-canvas');
-                        var canvas = document.createElement('canvas');
-                        var context = canvas.getContext('2d');
-
-                        //var bb = document.querySelector('.col-xs-9')
-                        //    .getBoundingClientRect(),
-                        //    width = bb.right - bb.left;
-
-
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
-
-                        // Render PDF page into canvas context
-                        var renderContext = {
-                            canvasContext: context,
-                            viewport: viewport
-                        };
-                        var renderTask = page.render(renderContext);
-                        renderTask.then(function () {
-                            console.log('Page rendered');
-                        });
-                        
-                        $('#app').append(canvas)
-                    }
-                    // Fetch the first page
-                    var pageNumber = 1;
-                    pdf.getPage(pageNumber).then(renderPage);
-                    pdf.getPage(2).then(renderPage);
-
-                }, function (reason) {
-                    console.error(reason);
-                });
-
-            };
-
-            function renderPDF(pdfData, canvasContainer, options) {
-                console.log("caled");
-                var options = options || { scale: 1 };
+            function renderPDF(pdfData) {
+                var canvasContainer = document.getElementById('doc');
+                var pdfs = canvasContainer.querySelectorAll('canvas');
+                for (var i = 0; i < pdfs.length; i++) {
+                    canvasContainer.removeChild(pdfs[i]);
+                }
+                var options = { scale: 1.5 };
 
                 function renderPage(page) {
                     console.log(page);
-;                    var viewport = page.getViewport(options.scale);
+                    var viewport = page.getViewport(options.scale);
                     var canvas = document.createElement('canvas');
                     var ctx = canvas.getContext('2d');
                     var renderContext = {
@@ -219,7 +177,7 @@
                     canvas.height = viewport.height;
                     canvas.width = viewport.width;
                     canvasContainer.appendChild(canvas);
-
+                    
                     page.render(renderContext);
                 }
 
@@ -229,8 +187,8 @@
                         pdfDoc.getPage(num).then(renderPage);
                 }
                 PDFJS.disableWorker = true;
-                PDFJS.getDocument({ data: pdfData }).then(renderPages);
-            }   
+                return PDFJS.getDocument({ data: pdfData }).then(renderPages);
+            }
 
 
     </script>
