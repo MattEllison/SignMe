@@ -73,39 +73,11 @@
 @section scripts{
     <script>
 
-            var vm = @(Html.Raw(Json.Serialize(Model)));
+        var vm = @(Html.Raw(Json.Serialize(Model)));
 
         $(function () {
             GetActiviyHistory();
-
             renderPDF(atob(vm.base64));
-            //loadPDF(atob(vm.base64))
-                //.then(function () {
-                //var canvas  = $('#the-canvas')
-                //canvas.on('mousemove', function (e) {
-                //    var pageX = document.getElementById("x");
-                //    var pageY = document.getElementById("y");
-                //    pageX.innerText = e.pageX;
-                //    pageY.innerText = e.pageY;
-
-                //    var pageX = document.getElementById("pagex");
-                //    var pageY = document.getElementById("pagey");
-                //    pageX.innerText = canvas.offset().left;
-                //    pageY.innerText = canvas.offset().top;
-
-                //    //if (app.signed == false) {
-                //    //    $('#drag').show();
-                //    //    console.log("left", canvas.offset().left)
-                //    //    $('#drag').css({
-                //    //        left: e.pageX - canvas.offset().left,
-                //    //        top: e.pageY - canvas.offset().top * .3
-                //    //    });
-                //    //}
-
-                //});
-
-            //})
-
         });
 
             var app = new Vue({
@@ -124,6 +96,14 @@
 
                         var x = event.pageX - $('canvas').offset().left;
                         var y = event.pageY - $('canvas').offset().top;//- $('.navbar').height();
+
+                        var widthOfCanvas = $('canvas')[0].width;
+                        var heightOfCanvas = $('canvas')[0].height;
+
+                        x = (event.pageX) / (widthOfCanvas + $('canvas').offset().left);
+                        y = (event.pageY - $('canvas').offset().top) / heightOfCanvas;
+                        console.log(x);
+                        console.log(y);
                         $.blockUI();
 
                         $.post('/Document/SignImage', {
@@ -165,7 +145,6 @@
                 var options = { scale: 1.5 };
 
                 function renderPage(page) {
-                    console.log(page);
                     var viewport = page.getViewport(options.scale);
                     var canvas = document.createElement('canvas');
                     var ctx = canvas.getContext('2d');
@@ -182,7 +161,7 @@
                 }
 
                 function renderPages(pdfDoc) {
-                    console.log(pdfDoc.numPages)
+
                     for (var num = 1; num <= pdfDoc.numPages; num++)
                         pdfDoc.getPage(num).then(renderPage);
                 }

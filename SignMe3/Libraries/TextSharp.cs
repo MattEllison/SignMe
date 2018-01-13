@@ -34,7 +34,7 @@ namespace SignMe3.Libraries
 
             return Convert.ToBase64String(stream.ToArray());
         }
-        public string SignFile(byte[] fileToSign, byte[] userSignature, float x, float y)
+        public string SignFile(byte[] fileToSign, int pageNumber, byte[] userSignature, float x, float y)
         {
             //byte[] file = Convert.FromBase64String(base64);
             var stream = new MemoryStream(fileToSign);
@@ -47,11 +47,11 @@ namespace SignMe3.Libraries
             //Image image = Image.GetInstance(Path.Combine(pathToResources, "Matt Signature.png"));
             Image image = Image.GetInstance(userSignature.ToArray());
             image.ScaleAbsolute(150f, 75f);
-            PdfContentByte content = pdfStamper.GetOverContent(1);
-            image.SetAbsolutePosition(pdfReader.GetPageSize(1).Width * .5f, pdfReader.GetPageSize(1).Height * .5f);
-            image.SetAbsolutePosition(0f, 0f);
-            image.SetAbsolutePosition(PageSize.LETTER.Width - image.ScaledWidth, PageSize.LETTER.Height - image.ScaledHeight);
-            image.SetAbsolutePosition(PageSize.LETTER.Width - image.ScaledWidth, 0);
+            PdfContentByte content = pdfStamper.GetOverContent(pageNumber);
+            //image.SetAbsolutePosition(pdfReader.GetPageSize(1).Width * x, pdfReader.GetPageSize(1).Height * y);
+            //image.SetAbsolutePosition(content.co, 0f);
+            image.SetAbsolutePosition(PageSize.LETTER.Width * (x * .4f), PageSize.LETTER.Height * (1-y));
+            //image.SetAbsolutePosition(PageSize.LETTER.Width - image.ScaledWidth, 0);
 
             content.AddImage(image);
 

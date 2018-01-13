@@ -61,7 +61,7 @@ namespace SignMe3.Controllers
         }
 
         [HttpPost, HttpGet]
-        public IActionResult SignImage(int id, float x = 1, float y = 1)
+        public IActionResult SignImage(int id, int pageNumber, float x , float y )
         {
             DocumentActivity.RecordActivity(DocumentActivityOptions.Signed, id, userid);
 
@@ -71,7 +71,7 @@ namespace SignMe3.Controllers
             var userSignature =  DataContext.UserSignatures.FirstOrDefault(sig => sig.UserName == username).SignatureBase64;
             var userSignatureBytes = Convert.FromBase64String(userSignature.Replace("image/png;base64,", ""));
 
-            var signedFile = PDFTool.SignFile(file, userSignatureBytes, x, y);
+            var signedFile = PDFTool.SignFile(file, pageNumber, userSignatureBytes, x, y);
 
             var doc = db.Documents.First(xx => xx.Id == id);
             doc.SignedBased64 = signedFile;
