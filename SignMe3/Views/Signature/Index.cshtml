@@ -65,7 +65,7 @@
             app = new Vue({
                 el: '#app',
                 data: {
-                    signedfile: "data:" + (vm != null ? vm.signature : ''),
+                    signedfile: "data:image/png;base64," + (vm != null ? vm.signature : ''),
                     vm: vm
                 },
                 methods: {
@@ -80,12 +80,11 @@
 
                     },
                     Submit: function () {
-                        console.log($sigdiv.jSignature("getData");
                         var data = {
                             signature: $sigdiv.jSignature("getData", "image")[1]
                         };
                         $.post('/Signature/Update', data, function (result) {
-                            app.signedfile = "data:" + result;
+                            app.signedfile = "data:image/png;base64," + result;
                             vm.signature = result;
                             app.Reset();
                         });

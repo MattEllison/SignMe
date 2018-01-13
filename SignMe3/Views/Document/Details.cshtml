@@ -24,7 +24,11 @@
         <div class="col-sm-12 col-xs-12">
 
             <div>
-                <div id="doc" v-on:click="updateImage">
+                @*<div v-for="doc in pdfDoc.numPages">
+                    <canvas v-on:click="test(doc)"></canvas>
+                </div>
+                <hr />*@
+                <div id="doc">
 
                     @*<img v-if="!signed" id="drag" style="display:none;position:absolute" src="~/images/Matt Signature-small.png" alt="Alternate Text" />*@
                     @*<canvas v-on:click="updateImage" style="border:1px solid black" id="the-canvas"></canvas>*@
@@ -63,7 +67,7 @@
 
     .buttons .btn {
         padding: 50px;
-        width: 100%
+        width: 100%;
         /*margin:10px;
         width:25em;*/
     }
@@ -86,22 +90,26 @@
                     signed: false,
                     uploadedFile: "data:application/pdf;base64," +  vm.base64,
                     history: vm.activityHistory,
+                    pdfDoc: {numPages:0},
                     vm:vm
                 },
                 methods: {
-
+                    test: function (d) { console.log(d); },
                     updateImage: function (event) {
+                        var thisElementIndex = $('canvas').index(event.currentTarget)
+                        
                         console.log("click", event.pageX);
                         console.log("click", event.pageY);
 
-                        var x = event.pageX - $('canvas').offset().left;
-                        var y = event.pageY - $('canvas').offset().top;//- $('.navbar').height();
+                        var thisCanvasElement = $('canvas:eq(' + thisElementIndex + ')');
+                        var x = event.pageX - thisCanvasElement.offset().left;
+                        var y = event.pageY - thisCanvasElement.offset().top;//- $('.navbar').height();
 
                         var widthOfCanvas = $('canvas')[0].width;
                         var heightOfCanvas = $('canvas')[0].height;
 
-                        x = (event.pageX) / (widthOfCanvas + $('canvas').offset().left);
-                        y = (event.pageY - $('canvas').offset().top) / heightOfCanvas;
+                        x = (event.pageX) / (widthOfCanvas + thisCanvasElement.offset().left);
+                        y = (event.pageY - thisCanvasElement.offset().top) / heightOfCanvas;
                         console.log(x);
                         console.log(y);
                         $.blockUI();
@@ -109,7 +117,8 @@
                         $.post('/Document/SignImage', {
                             x: x,
                             y: y,
-                            id: vm.documentID//,
+                            id: vm.documentID,
+                            pageNumber: thisElementIndex + 1//,
                             //base64: vm.base64
                         }).then(function (result) {
                             //location.reload();
@@ -135,9 +144,12 @@
                 })
 
             }
+           
 
             function renderPDF(pdfData) {
                 var canvasContainer = document.getElementById('doc');
+
+                //Remove old pdfs
                 var pdfs = canvasContainer.querySelectorAll('canvas');
                 for (var i = 0; i < pdfs.length; i++) {
                     canvasContainer.removeChild(pdfs[i]);
@@ -147,6 +159,7 @@
                 function renderPage(page) {
                     var viewport = page.getViewport(options.scale);
                     var canvas = document.createElement('canvas');
+                    canvas.addEventListener('click',app.updateImage)
                     var ctx = canvas.getContext('2d');
                     var renderContext = {
                         canvasContext: ctx,
@@ -161,7 +174,7 @@
                 }
 
                 function renderPages(pdfDoc) {
-
+                    app.pdfs = pdfDoc.numPages;
                     for (var num = 1; num <= pdfDoc.numPages; num++)
                         pdfDoc.getPage(num).then(renderPage);
                 }

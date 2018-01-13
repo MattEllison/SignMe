@@ -82,15 +82,18 @@ namespace SignMe3.Controllers
         [HttpPost]
         public IActionResult UploadFile(IFormFile file, double x = 1, double y = 1)
         {
+            var stream = new MemoryStream();
+            file.CopyTo(stream);
 
-            string base64 = PDFTool.ConvertFile(file);
+
+            //string base64 = PDFTool.ConvertFile(file);
             //string base64 = Libraries.GemBox.ConvertFile(file);
 
             var db = new DocumentEntities();
             var newDoc = new Document()
             {
                 DocumentName = file.FileName,
-                Base64 = base64
+                Base64 = Convert.ToBase64String(stream.ToArray())
             };
             db.Documents.Add(newDoc);
             db.SaveChanges();

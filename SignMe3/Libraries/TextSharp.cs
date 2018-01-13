@@ -26,11 +26,11 @@ namespace SignMe3.Libraries
             doc.Open();
 
             //PdfContentByte cb = writer.DirectContent;
-            doc.Add(new Paragraph("Image"));
+            //doc.Add(new Paragraph("Image"));
 
-            Image gif = Image.GetInstance(pathToResources + @"\matt signature.png");
+            //Image gif = Image.GetInstance(pathToResources + @"\matt signature.png");
 
-            doc.Add(gif);
+            //doc.Add(gif);
 
             return Convert.ToBase64String(stream.ToArray());
         }
@@ -50,7 +50,7 @@ namespace SignMe3.Libraries
             PdfContentByte content = pdfStamper.GetOverContent(pageNumber);
             //image.SetAbsolutePosition(pdfReader.GetPageSize(1).Width * x, pdfReader.GetPageSize(1).Height * y);
             //image.SetAbsolutePosition(content.co, 0f);
-            image.SetAbsolutePosition(PageSize.LETTER.Width * (x * .4f), PageSize.LETTER.Height * (1-y));
+            image.SetAbsolutePosition(PageSize.LETTER.Width * (x * .9f), PageSize.LETTER.Height * (1-y));
             //image.SetAbsolutePosition(PageSize.LETTER.Width - image.ScaledWidth, 0);
 
             content.AddImage(image);
