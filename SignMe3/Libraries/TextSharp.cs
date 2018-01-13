@@ -34,13 +34,11 @@ namespace SignMe3.Libraries
 
             return Convert.ToBase64String(stream.ToArray());
         }
-        public string SignFile(byte[] fileToSign, int pageNumber, byte[] userSignature, float x, float y)
+        public string SignFile(byte[] fileToSign, int documentID, int pageNumber, byte[] userSignature, float x, float y)
         {
-            //byte[] file = Convert.FromBase64String(base64);
             var stream = new MemoryStream(fileToSign);
 
             PdfReader pdfReader = new PdfReader(stream);
-            //var sig = new MemoryStream(System.IO.File.ReadAllBytes(Path.Combine(pathToResources, "Matt Signature.png")));
             var newFile = new MemoryStream();
             PdfStamper pdfStamper = new PdfStamper(pdfReader, newFile);
 
@@ -56,8 +54,160 @@ namespace SignMe3.Libraries
             content.AddImage(image);
 
             pdfStamper.Close();
+            var stamp = $"http://signme/Documents/{documentID}";
+            var final = AddWaterMark(newFile.ToArray(), $"Signed {DateTime.Now.ToString("d")} ");
+            var final2 = ApplyVerificationStamp2(final.ToArray(), stamp);
+            return Convert.ToBase64String(final2.ToArray());
+        }
 
-            return Convert.ToBase64String(newFile.ToArray());
+        private MemoryStream ApplyVerificationStamp(byte[] stream, string stamp)
+        {
+            var newFile = new MemoryStream();
+
+            PdfReader reader = new PdfReader(stream);
+            Rectangle size = reader.GetPageSizeWithRotation(1);
+            Document document = new Document(size);
+
+            // open the writer
+            PdfWriter writer = PdfWriter.GetInstance(document, newFile);
+            document.Open();
+
+            // the pdf content
+            PdfContentByte cb = writer.DirectContent;
+
+            // select the font properties
+            BaseFont bf = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+            cb.SetColorFill(BaseColor.DARK_GRAY);
+            cb.SetFontAndSize(bf, 8);
+
+            // write the text in the pdf content
+            cb.BeginText();
+            string text = stamp;
+            // put the alignment and coordinates here
+            cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, text, 5, 5, 0);
+            cb.EndText();
+
+
+            // create the new page and add it to the pdf
+            for (int i = 1; i < reader.NumberOfPages; i++)
+            {
+                PdfImportedPage page = writer.GetImportedPage(reader, i);
+                cb.AddTemplate(page, 0, 0);
+            }
+
+
+            // close the streams and voilá the file should be changed :)
+            document.Close();
+            newFile.Close();
+            writer.Close();
+            reader.Close();
+            return newFile;
+        }
+
+        private MemoryStream AddWaterMark(byte[] file, string stamp)
+        {
+            var newFile = new MemoryStream();
+            // Creating watermark on a separate layer
+            // Creating iTextSharp.text.pdf.PdfReader object to read the Existing PDF Document
+            PdfReader reader1 = new PdfReader(file);
+            //using (FileStream fs = new FileStream(watermarkedFile, FileMode.Create, FileAccess.Write, FileShare.None))
+            // Creating iTextSharp.text.pdf.PdfStamper object to write Data from iTextSharp.text.pdf.PdfReader object to FileStream object
+
+            using (PdfStamper stamper = new PdfStamper(reader1, newFile))
+            {
+                // Getting total number of pages of the Existing Document
+                int pageCount = reader1.NumberOfPages;
+
+                // Create New Layer for Watermark
+                PdfLayer layer = new PdfLayer("WatermarkLayer", stamper.Writer);
+                // Loop through each Page
+                for (int i = 1; i <= pageCount; i++)
+                {
+                    // Getting the Page Size
+                    Rectangle rect = reader1.GetPageSize(i);
+
+                    // Get the ContentByte object
+                    PdfContentByte cb = stamper.GetUnderContent(i);
+
+                    // Tell the cb that the next commands should be "bound" to this new layer
+                    cb.BeginLayer(layer);
+                    cb.SetFontAndSize(BaseFont.CreateFont(
+                      BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED), 50);
+
+                    PdfGState gState = new PdfGState();
+                    gState.FillOpacity = 0.25f;
+                    cb.SetGState(gState);
+
+                    cb.SetColorFill(BaseColor.BLACK);
+                    cb.BeginText();
+                    cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, stamp, rect.Width / 2, rect.Height / 2, 45f);
+                    cb.EndText();
+
+                    // Close the layer
+                    cb.EndLayer();
+                }
+            }
+
+
+
+
+
+
+            return newFile;
+        }
+
+
+
+        private MemoryStream ApplyVerificationStamp2(byte[] file, string stamp)
+        {
+            var newFile = new MemoryStream();
+            // Creating watermark on a separate layer
+            // Creating iTextSharp.text.pdf.PdfReader object to read the Existing PDF Document
+            PdfReader reader1 = new PdfReader(file);
+            //using (FileStream fs = new FileStream(watermarkedFile, FileMode.Create, FileAccess.Write, FileShare.None))
+            // Creating iTextSharp.text.pdf.PdfStamper object to write Data from iTextSharp.text.pdf.PdfReader object to FileStream object
+            
+            using (PdfStamper stamper = new PdfStamper(reader1, newFile))
+            {
+                // Getting total number of pages of the Existing Document
+                int pageCount = reader1.NumberOfPages;
+
+                // Create New Layer for Watermark
+                PdfLayer layer = new PdfLayer("WatermarkLayer", stamper.Writer);
+                // Loop through each Page
+                for (int i = 1; i <= pageCount; i++)
+                {
+                    // Getting the Page Size
+                    Rectangle rect = reader1.GetPageSize(i);
+
+                    // Get the ContentByte object
+                    PdfContentByte cb = stamper.GetUnderContent(i);
+
+                    // Tell the cb that the next commands should be "bound" to this new layer
+                    cb.BeginLayer(layer);
+                    cb.SetFontAndSize(BaseFont.CreateFont(
+                      BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED), 15);
+
+                    PdfGState gState = new PdfGState();
+                    gState.FillOpacity = 0.25f;
+                    cb.SetGState(gState);
+
+                    cb.SetColorFill(BaseColor.BLACK);
+                    cb.BeginText();
+                    cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, stamp, 5, 5, 0);
+                    cb.EndText();
+
+                    // Close the layer
+                    cb.EndLayer();
+                }
+            }
+
+
+
+
+
+
+            return newFile;
         }
     }
 }

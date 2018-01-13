@@ -19,12 +19,12 @@ namespace SignMe3.Controllers
         {
             using (var DataContext = new DocumentEntities())
             {
-                var docs = from x in DataContext.Documents
+                var docs = (from x in DataContext.Documents
                            select new
                            {
                                Name = x.DocumentName,
                                ID = x.Id
-                           };
+                           }).ToList();
 
                 return View(docs);
 
@@ -45,7 +45,6 @@ namespace SignMe3.Controllers
                     Base64 = doc.SignedBased64 ?? doc.Base64
                 };
 
-                //var history = db.ActivityHistories.Where(x => x.UserID == 1);
                 return View(vm);
             }
              
@@ -94,7 +93,7 @@ namespace SignMe3.Controllers
                 var userSignature = DataContext.UserSignatures.FirstOrDefault(sig => sig.UserName == username).SignatureBase64;
                 var userSignatureBytes = Convert.FromBase64String(userSignature.Replace("image/png;base64,", ""));
 
-                var signedFile = PDFTool.SignFile(file, pageNumber, userSignatureBytes, x, y);
+                var signedFile = PDFTool.SignFile(file,id, pageNumber, userSignatureBytes, x, y);
 
                 var doc = db.Documents.First(xx => xx.Id == id);
                 doc.SignedBased64 = signedFile;
