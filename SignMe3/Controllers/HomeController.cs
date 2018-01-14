@@ -19,7 +19,9 @@ namespace SignMe3.Controllers
         {
             using(DocumentEntities DataContext = new DocumentEntities())
             {
-                if(!DataContext.UserSignatures.Any(x=>x.UserName == "mellison"))
+
+                ViewBag.Count = DataContext.Documents.Count();
+                if (!DataContext.UserSignatures.Any(x=>x.UserName == "mellison"))
                 {
                     return RedirectToAction("Index", "Signature", null);
                     

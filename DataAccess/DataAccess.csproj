@@ -80,7 +80,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <EntityDeploy Include="DocumentDB.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>DocumentDB.Designer.cs</LastGenOutput>
