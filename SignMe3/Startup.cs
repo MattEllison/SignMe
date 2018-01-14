@@ -48,7 +48,6 @@ namespace SignMe3
             }
 
             app.UseStaticFiles();
-            var t = new { contrller = "", action = "" };
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

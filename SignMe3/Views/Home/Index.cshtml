@@ -1,7 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
+<div>
+    Document Count: @ViewBag.Count
+</div>
 <div class="row">
     <div class="col-xs-12">
         <form action="/home/UploadFile"
@@ -14,7 +16,6 @@
 
 
     <style>
-     
 
         form {
             border-radius: 5px;

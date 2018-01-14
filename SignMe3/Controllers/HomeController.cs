@@ -15,13 +15,18 @@ namespace SignMe3.Controllers
 
     public class HomeController : Controller
     {
-        private static DocumentEntities DataContext = new DocumentEntities();
-        //private static Libraries.GemBox PDFTool = new Libraries.GemBox();
-        private static Libraries.TextSharp PDFTool = new Libraries.TextSharp();
-
         public IActionResult Index()
         {
-            return View();
+            using(DocumentEntities DataContext = new DocumentEntities())
+            {
+                if(!DataContext.UserSignatures.Any(x=>x.UserName == "mellison"))
+                {
+                    return RedirectToAction("Index", "Signature", null);
+                    
+                }
+                return View();
+            }
+            
         }
 
 
@@ -106,22 +111,7 @@ namespace SignMe3.Controllers
         }
 
 
-        public IActionResult Documents()
-        {
-            var docs = from x in DataContext.Documents
-                       select new
-                       {
-                           Name = x.DocumentName,
-                           ID = x.Id
-                       };
 
-            return View(docs);
-        }
-
-        public IActionResult MySignature()
-        {
-            return View();
-        }
 
         public IActionResult Error()
         {
