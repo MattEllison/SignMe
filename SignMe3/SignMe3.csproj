@@ -15,6 +15,10 @@
     <None Remove="Controllers\bin\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="app.Release.config" />
+  </ItemGroup>
+
 
 
   <ItemGroup>
