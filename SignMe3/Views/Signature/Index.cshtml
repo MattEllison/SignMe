@@ -13,8 +13,8 @@
 
         </div>
         <div v-if="vm" class="col-xs-12">
-            <h4>Your Current Signaure</h4>
-            <img  v-bind:src="signedfile" alt="Your Current Signature" />
+            <h4>My Current Signaure</h4>
+            <img style="width:100%" v-bind:src="signedfile" alt="My Current Signature" />
 
         </div>
     </div>
@@ -26,14 +26,24 @@
             <div style="border:1px solid black;margin:25px;" id="signature"></div>
 
         </div>
-        <div class="col-sm-11 col-xs-11">
+        
+    </div>
+    <div class="row">
+        <div class="col-sm-3 col-xs-11">
             <div class="buttons">
                 <button class="btn btn-lg btn-info" v-on:click="Reset">Clear</button>
                 <button class="btn btn-lg btn-danger" v-on:click="Delete">Delete</button>
-                <button class="btn btn-lg btn-primary pull-right" v-on:click="Submit">Submit</button>
+
+            </div>
+        </div>
+        <div class="col-xs-11 col-sm-3 col-sm-offset-6">
+            <div class="buttons">
+
+                <button class="btn btn-lg btn-primary" v-on:click="Submit">Submit</button>
             </div>
         </div>
     </div>
+
 
 </div>
 
@@ -98,7 +108,7 @@
                             app.vm = { signature: result };
                             app.Reset();
                             UnblockUI();
-                            alert('Password updated')
+                            alert('Signature updated')
 
                         });
 
@@ -120,7 +130,9 @@
 
             }
             $sigdiv = $("#signature")
-            $sigdiv.jSignature();
+            $sigdiv.jSignature({
+                'decor-color': 'transparent'
+            });
         })
 
 
